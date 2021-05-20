@@ -33,7 +33,7 @@ class TrainData(Dataset):
         if 'roberta' in self.model_type:
             return input_ids, attention_mask, label
         token_type_ids = np.array(tokenzied_dict['token_type_ids'])
-        return input_ids, token_type_ids, attention_mask, label
+        return input_ids, token_type_ids, attention_mask, np.array([label])
 
     def __len__(self):
         return len(self.datas)
