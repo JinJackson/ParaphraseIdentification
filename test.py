@@ -23,8 +23,10 @@ with torch.no_grad():
     for batch in tqdm(TrainDataLoader, desc='Iteration'):
         batch = [t.to(device) for t in batch]
         input_ids, token_type_ids, attention_mask, labels = batch
-        outputs = model(input_ids=input_ids.long(), token_type_ids=token_type_ids.long(), attention_mask=attention_mask, label=labels)
+        outputs = model(input_ids=input_ids.long(), token_type_ids=token_type_ids.long(), attention_mask=attention_mask, labels=labels)
         test_loss, logits = outputs
+        #print(logits)
+        #print(logits.item())
         if logits.item() > 0:
             count += 1
         loss.append(test_loss.item())
@@ -35,11 +37,6 @@ with torch.no_grad():
         else:
             all_labels = np.concatenate((all_labels, labels.detach().cpu().numpy()), axis=0)
             all_logits = np.concatenate((all_logits, logits.detach().cpu().numpy()), axis=0)
-
-print(count)
 all_predict = (all_logits > 0) + 0
-print(sum(all_logits))
-print(sum(all_predict))
 results = (all_predict == all_labels)
 acc = results.sum() / len(all_predict)
-print(acc)
