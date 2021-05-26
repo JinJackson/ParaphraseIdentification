@@ -1,6 +1,6 @@
 from model.MatchModel import BertMatchModel
 from tqdm import tqdm
-from dataset.dataset import TrainData
+from dataset.all_dataset import TrainData
 from torch.utils.data import DataLoader
 from transformers import BertTokenizer, BertModel
 import numpy as np

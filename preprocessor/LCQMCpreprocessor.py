@@ -11,7 +11,7 @@ with open(file_name, 'r', encoding='utf-8') as reader:
         label = a_data['gold_label'].strip()
         datas.append([query1, query2, str(label)])
 
-written_file = '../data/LCQMC/clean/test.txt'
+written_file = '../data/LCQMC/clean/test_clean.txt'
 with open(written_file, 'w', encoding='utf-8') as writer:
     for a_data in datas:
         query1, query2, label = a_data

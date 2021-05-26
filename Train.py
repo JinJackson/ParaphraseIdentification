@@ -9,7 +9,7 @@ import torch
 import numpy as np
 from tqdm import tqdm
 
-from dataset.dataset import TrainData
+from all_dataset import TrainData
 from utils.logger import getLogger
 from utils.metrics import acc
 
@@ -134,8 +134,10 @@ def train(model, tokenizer, checkpoint):
         torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
         logger.debug("Saving optimizer and scheduler states to %s", output_dir)
 
+        dev_loss, dev_acc = test(model=model, tokenizer=tokenizer, test_file=args.dev_file, checkpoint=epoch)
         test_loss, test_acc = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch)
-        print(test_loss, test_acc)
+        #print(test_loss, test_acc)
+        logger.info('【DEV】Train Epoch %d: train_loss=%.4f, acc=%.4f' % (epoch, dev_loss, dev_acc))
         logger.info('【TEST】Train Epoch %d: train_loss=%.4f, acc=%.4f' % (epoch, test_loss, test_acc))
 
 

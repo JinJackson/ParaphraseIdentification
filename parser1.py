@@ -3,9 +3,9 @@ import torch
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--train_file', default='data/MRPC/clean/train_clean.txt')
+parser.add_argument('--train_file', default='data/LCQMC/clean/train_clean.txt')
 parser.add_argument('--dev_file', default=None)
-parser.add_argument('--test_file', default='data/MRPC/clean/test_clean.txt')
+parser.add_argument('--test_file', default='data/LCQMC/clean/test_clean.txt')
 parser.add_argument('--model_type', default='roberta-base')
 parser.add_argument('--seed', default=1024, type=int)
 parser.add_argument('--save_dir', default='result/roberta/checkpoints')
