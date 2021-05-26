@@ -9,7 +9,7 @@ import torch
 import numpy as np
 from tqdm import tqdm
 
-from dataset.MRPCdataset import TrainData
+from dataset.dataset import TrainData
 from utils.logger import getLogger
 from utils.metrics import acc
 

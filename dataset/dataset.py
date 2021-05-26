@@ -13,10 +13,9 @@ def readDataFromFile(data_file):
 
 
 class TrainData(Dataset):
-    def __init__(self, data_file, max_length, tokenizer, model_type):
-        self.data_file = data_file
+    def __init__(self, datas, max_length, tokenizer, model_type):
+        self.datas = datas
         self.max_length = max_length
-        self.datas = readDataFromFile(self.data_file)
         self.tokenizer = tokenizer
         self.model_type = model_type
 
