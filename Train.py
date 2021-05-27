@@ -89,7 +89,7 @@ def train(model, tokenizer, checkpoint):
         for batch in tqdm(train_dataloader, desc="Iteration"):
             model.zero_grad()
             # 设置tensor gpu运行
-            batch = tuple(t.to(args.device) for t in batch)
+            batch = tuple(t.to(args.device) for t in batch[:-2])
 
             if 'roberta' in args.model_type:
                 batch = [t.to(args.device) for t in batch]
@@ -165,7 +165,7 @@ def test(model, tokenizer, test_file, checkpoint, output_dir=None):
     for batch in tqdm(test_dataLoader, desc="Evaluating"):
         with torch.no_grad():
             if 'roberta' in args.model_type:
-                batch = [t.to(args.device) for t in batch]
+                batch = [t.to(args.device) for t in batch[:-2]]
                 input_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 attention_mask=attention_mask.long(),

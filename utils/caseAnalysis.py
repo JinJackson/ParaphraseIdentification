@@ -12,11 +12,11 @@ model_type = 'bert-base-chinese'
 
 
 # load models
-model = BertMatchModel.from_pretrained('')
-tokenizer = BertTokenizer.from_pretrained('')
+model = BertMatchModel.from_pretrained('bert-base-chinese')
+tokenizer = BertTokenizer.from_pretrained('bert-base-chinese')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model.to(device)
-
+model_type = 'bert'
 # loss_function
 loss_func = BCEWithLogitsLoss()
 
@@ -30,6 +30,23 @@ dataloader = DataLoader(dataset=dataset,
                         batch_size=1,
                         shuffle=False)
 
+wrong_case = []
 for a_data in dataloader:
-    a_data = [t.to(device) for t in a_data]
-    
+    query1, query2 = a_data[-2], a_data[-1]
+    a_data = [t for t in a_data[:-2]]
+    if 'roberta' in model_type:
+        input_ids, attention_mask, label = a_data
+        input_ids = input_ids.long()
+        attention_mask = attention_mask.long()
+        loss, logits = model(input_ids=input_ids, attention_mask=attention_mask,
+                             labels=label)
+    else:
+        input_ids, token_type_ids, attention_mask, label = a_data
+        input_ids = input_ids.long()
+        token_type_ids = token_type_ids.long()
+        attention_mask = attention_mask.long()
+        loss, logits = model(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask,
+                             labels=label)
+    if (logits.item() * label.item()) < 0:
+        #print(query1, query2, label.item())
+        wrong_case.append([query1, query2, label.item(), logits.item()])
