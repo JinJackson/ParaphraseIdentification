@@ -6,15 +6,15 @@ class BertMatchModel(BertPreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
         self.bert = BertModel(config)
-        #self.dropout = nn.Dropout(config.hidden_dropout_prob)
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
         self.linear = nn.Linear(config.hidden_size, 1)
         self.loss_func = nn.BCEWithLogitsLoss()
 
     def forward(self, input_ids, token_type_ids, attention_mask, labels=None):
         outputs = self.bert(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask)
         pooler_output = outputs[1]
-        # logits = self.linear(self.dropout(pooler_output))
-        logits = self.linear(pooler_output)
+        logits = self.linear(self.dropout(pooler_output))
+        # logits = self.linear(pooler_output)
         if labels is None:
             return logits
         loss = self.loss_func(logits, labels.float())
