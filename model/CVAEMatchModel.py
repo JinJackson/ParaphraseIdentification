@@ -3,7 +3,7 @@ import torch.nn as nn
 from transformers import BertModel, RobertaModel, AlbertModel
 from transformers import BertPreTrainedModel
 from model.attention import AttentionMerge
-
+from parser1 import args
 
 # CVAE encoder - BiGRU
 class GRUEncoder(nn.Module):
@@ -20,11 +20,11 @@ class GRUEncoder(nn.Module):
                                 dropout=dropout,
                                 bidirectional=True)
         # 均值方差计算模块
-        self.fc_mean = nn.Linear(seq_len * 2 * hidden_size, (seq_len * 2 * hidden_size)//2)
+        self.fc_mean = nn.Linear(seq_len * 2 * hidden_size, seq_len * hidden_size)
         # 合并后面并把表示减半
         # [batch_size, seq_len, 2 * hidden_size] ==> [batch_size, (seq_len * 2 * hidden_size)//2]
         self.fc_mean_act = nn.ReLU()
-        self.fc_logvar = nn.Linear(seq_len * 2 * hidden_size, (seq_len * 2 * hidden_size)//2)
+        self.fc_logvar = nn.Linear(seq_len * 2 * hidden_size, seq_len * hidden_size)
         self.fc_logvar_act = nn.ReLU()
 
     def forward(self, inputs):
@@ -64,7 +64,7 @@ class GRUDecoder(nn.Module):
 
 # CVAE Module
 class CVaeModel(nn.Module):
-
+    # output:mean, logvar, lantent_z, recons_x
     # 重参数化
     def reparameterize(self, mu, logvar):
         std = torch.exp(0.5 * logvar)
@@ -94,38 +94,52 @@ class CVaeModel(nn.Module):
         #print('latent_shape:', latent_z.shape)
         output = self.decoder_module(latent_z)
         #print('output_shape', output.shape)
-        return latent_z, output
+        return mean, logvar, latent_z, output
         
 
 # CVAE MatchModel
 class CVaeBertMatchModel(BertPreTrainedModel):
-    def __init__(self, config, input_size, hidden_size, num_layers, dropout, seq_len):
-        super(CVaeBertMatchModel, self).__init__()
+    def __init__(self, config):
+        super(CVaeBertMatchModel, self).__init__(config)
         self.bert = BertModel(config)
         # cvae返回(latent_z, output) output就是重构的x:[batch,seq,768]
         # lantent_z = [batch, seq*hidden]
-        self.cvae_module = CVaeModel(input_size=input_size,
-                                     hidden_size=hidden_size,
-                                     num_layers=num_layers,
-                                     dropout=dropout,
-                                     seq_len=seq_len)
+        self.input_size = config.hidden_size
+        self.dropout = config.hidden_dropout_prob
+        self.max_len = args.max_length
+        self.hidden_size = args.hidden_size
+        self.num_layers = args.num_layers
+        self.cvae_module = CVaeModel(input_size=self.input_size,
+                                     hidden_size=self.hidden_size,
+                                     num_layers=self.num_layers,
+                                     dropout=self.dropout,
+                                     seq_len=self.max_len)
         # 加一个FFN
         # self.linear1 = nn.Linear(seq_len*hidden_size, seq_len*hidden_size*2)
-        # self.linear2 = nn.linear(seq_len*hidden_size*2, seq_len*hidden_size)
-        self.linear3 = nn.linear(seq_len*hidden_size, 1)
+        # self.linear2 = nn.Linear(seq_len*hidden_size*2, seq_len*hidden_size)
+        self.linear3 = nn.Linear(self.max_len * self.hidden_size, 1)
         self.reconstruction_loss_func = nn.MSELoss()
         self.task_loss_func = nn.BCEWithLogitsLoss()
 
     def forward(self, input_ids, token_type_ids, attention_mask, labels=None):
 
-        last_hidden_state = self.bert(input_ids=input_ids,
-                                      token_type_ids=token_type_ids,
-                                      attention_mask=attention_mask)
+        outputs = self.bert(input_ids=input_ids,
+                            token_type_ids=token_type_ids,
+                            attention_mask=attention_mask)
 
-        lantent_z, recons_x = self.cvae_module(representation=last_hidden_state)
-        logits = self.linear3(lantent_z)
-        task_loss = self.task_loss_func(logits, labels)
-        recons_loss = self.reconstruction_loss_func()
+        last_hidden_state = outputs[0]
+
+        mean, logvar, latent_z, recons_x = self.cvae_module(representation=last_hidden_state)
+        logits = self.linear3(latent_z)
+        if labels is not None:
+            task_loss = self.task_loss_func(logits, labels)
+            recons_loss = self.reconstruction_loss_func(recons_x, last_hidden_state)
+            KLD_loss = -0.5 * torch.sum(1 + logvar - mean.pow(2) - logvar.exp())
+            loss = 0.5 * task_loss + 0.5 * (recons_loss + KLD_loss)
+            return loss, logits
+        else:
+            return logits
+
 
 
 

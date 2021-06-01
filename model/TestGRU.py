@@ -1,53 +1,23 @@
 from transformers import BertModel, BertTokenizer
 from model.CVAEMatchModel import GRUEncoder
-from model.CVAEMatchModel import CVaeModel
+from model.CVAEMatchModel import CVaeModel, CVaeBertMatchModel
 import torch
 import torch.nn as nn
-model = BertModel.from_pretrained('bert-base-uncased')
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 Text = 'I feel good today.'
 
-inputs = tokenizer(Text, return_tensors='pt')
-outputs = model(**inputs)
+inputs = tokenizer(Text, max_length=128, padding='max_length', return_tensors='pt')
+labels = torch.tensor([[1]]).float()
+# inputs.to(device)
+model = CVaeBertMatchModel.from_pretrained('bert-base-uncased')
+# model.to(device)
 
-input_size = 768
-hidden_size = 256
-num_layers = 2
-dropout = 0.1
-seq_len = 7
+loss, logits = model(**inputs, labels=labels)
 
-# GRU_Layer = nn.GRU(input_size=input_size,
-#                    hidden_size=hidden_size,
-#                    num_layers=num_layers,
-#                    bias=True,
-#                    batch_first=True,
-#                    dropout=dropout,
-#                    bidirectional=True)
-#
-# res, _ = GRU_Layer(outputs[0])
-# print(type(res))
-# print(res.shape)
-#
-# res = res.view((res.size(0), seq_len * 2 * hidden_size))
-# print(res.shape)
-# print(res.size(0), res.size(1))
-# fc = nn.Linear(seq_len * 2 * hidden_size, (seq_len * 2 * hidden_size)//2)
-# res = fc(res)
-# print(res.shape)
+loss.backward()
 
 
-model = CVaeModel(input_size=input_size,
-                  hidden_size=hidden_size,
-                  num_layers=num_layers,
-                  dropout=dropout,
-                  seq_len=seq_len)
-
-# print(outputs[0])
-print(outputs[0].shape)
-
-latent_z, recons_x = model(representation=outputs[0])
-
-print(type(latent_z), type(recons_x))
-
-print(latent_z.shape, recons_x.shape)
+print(loss, logits)

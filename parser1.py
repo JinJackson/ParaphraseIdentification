@@ -11,14 +11,21 @@ parser.add_argument('--seed', default=1024, type=int)
 parser.add_argument('--save_dir', default='result/roberta/checkpoints')
 parser.add_argument('--do_train', default=True)
 parser.add_argument('--do_lower_case', default=True)
+
+
 # TODO  常改参数
+#模型参数
+parser.add_argument('--hidden_size', default=128, type=int)
+parser.add_argument('--num_layers', default=2, type=int)
+
+
+#超参数
 parser.add_argument('--learning_rate', default='2e-5', type=float)
 parser.add_argument('--adam_epsilon', default=1e-8, type=float)
-
 parser.add_argument('--gpu', default=0, type=int)
 parser.add_argument('--epochs', default=5, type=int)
 parser.add_argument('--batch_size', default=4, type=int)
-parser.add_argument('--max_length', default=200, type=int)
+parser.add_argument('--max_length', default=128, type=int)
 parser.add_argument('--warmup_steps', default=0.1, type=float)
 
 parser.add_argument('--fp16', action='store_true')
