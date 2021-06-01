@@ -1,6 +1,6 @@
 from transformers import BertModel, BertTokenizer
-from CVAEMatchModel import GRUEncoder
-from CVAEMatchModel import CVaeModel
+from model.CVAEMatchModel import GRUEncoder
+from model.CVAEMatchModel import CVaeModel
 import torch
 import torch.nn as nn
 model = BertModel.from_pretrained('bert-base-uncased')
@@ -46,8 +46,8 @@ model = CVaeModel(input_size=input_size,
 # print(outputs[0])
 print(outputs[0].shape)
 
-res = model(representation=outputs[0])
+latent_z, recons_x = model(representation=outputs[0])
 
-print(type(res))
+print(type(latent_z), type(recons_x))
 
-print(res.shape)
+print(latent_z.shape, recons_x.shape)

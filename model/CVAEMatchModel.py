@@ -2,9 +2,10 @@ import torch
 import torch.nn as nn
 from transformers import BertModel, RobertaModel, AlbertModel
 from transformers import BertPreTrainedModel
-from attention import AttentionMerge
+from model.attention import AttentionMerge
 
 
+# CVAE encoder - BiGRU
 class GRUEncoder(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers, dropout, seq_len):
         super(GRUEncoder, self).__init__()
@@ -18,7 +19,7 @@ class GRUEncoder(nn.Module):
                                 batch_first=True,
                                 dropout=dropout,
                                 bidirectional=True)
-        #均值方差计算模块
+        # 均值方差计算模块
         self.fc_mean = nn.Linear(seq_len * 2 * hidden_size, (seq_len * 2 * hidden_size)//2)
         # 合并后面并把表示减半
         # [batch_size, seq_len, 2 * hidden_size] ==> [batch_size, (seq_len * 2 * hidden_size)//2]
@@ -35,18 +36,33 @@ class GRUEncoder(nn.Module):
         return self.fc_mean_act(self.fc_mean(outputs)), self.fc_logvar_act(self.fc_logvar(outputs))
 
 
+# CVAE Decoder - BiGRU
 class GRUDecoder(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, dropout):
+    def __init__(self, input_size, hidden_size, num_layers, dropout, seq_len):
+        # ！！此处传入的input_size和hidden_size互相交换了，input_size是256， hidden_size是768
         super(GRUDecoder, self).__init__()
-        self.GRU_Layer = nn.GRU(input_size=input_size,
-                                hidden_size=hidden_size,
+        # input: [batch_size, (seq_len*hidden_size*2)//2]
+        # output: [batch_size, seq_len, 768]
+        self.seq_len = seq_len
+        self.input_size = input_size
+
+        self.fc_expand = nn.Linear((seq_len*input_size*2)//2, seq_len*input_size*2)
+        self.GRU_Layer = nn.GRU(input_size=input_size*2,
+                                hidden_size=hidden_size//2,
                                 num_layers=num_layers,
                                 bias=True,
                                 batch_first=True,
                                 dropout=dropout,
                                 bidirectional=True)
 
+    def forward(self, inputs):
+        outputs = self.fc_expand(inputs) # [batch, (seq_len*256*2)//2](latent) ==>[batch, seq*256]
+        outputs = outputs.view((-1, self.seq_len, self.input_size*2)) # [batch, seq_len, 512]
+        outputs, _ = self.GRU_Layer(outputs)
+        return outputs
 
+
+# CVAE Module
 class CVaeModel(nn.Module):
 
     # 重参数化
@@ -64,14 +80,54 @@ class CVaeModel(nn.Module):
                                          num_layers=num_layers,
                                          dropout=dropout,
                                          seq_len=seq_len)
+        self.decoder_module = GRUDecoder(input_size=hidden_size,
+                                         hidden_size=input_size,
+                                         num_layers=num_layers,
+                                         dropout=dropout,
+                                         seq_len=seq_len)
 
     def forward(self, representation):
         mean, logvar = self.encoder_module(representation)
-        print('均值方差')
+        #print('均值方差')
         print(mean.shape, logvar.shape)
         latent_z = self.reparameterize(mean, logvar)
-        return latent_z
+        #print('latent_shape:', latent_z.shape)
+        output = self.decoder_module(latent_z)
+        #print('output_shape', output.shape)
+        return latent_z, output
         
+
+# CVAE MatchModel
+class CVaeBertMatchModel(BertPreTrainedModel):
+    def __init__(self, config, input_size, hidden_size, num_layers, dropout, seq_len):
+        super(CVaeBertMatchModel, self).__init__()
+        self.bert = BertModel(config)
+        # cvae返回(latent_z, output) output就是重构的x:[batch,seq,768]
+        # lantent_z = [batch, seq*hidden]
+        self.cvae_module = CVaeModel(input_size=input_size,
+                                     hidden_size=hidden_size,
+                                     num_layers=num_layers,
+                                     dropout=dropout,
+                                     seq_len=seq_len)
+        # 加一个FFN
+        # self.linear1 = nn.Linear(seq_len*hidden_size, seq_len*hidden_size*2)
+        # self.linear2 = nn.linear(seq_len*hidden_size*2, seq_len*hidden_size)
+        self.linear3 = nn.linear(seq_len*hidden_size, 1)
+        self.reconstruction_loss_func = nn.MSELoss()
+        self.task_loss_func = nn.BCEWithLogitsLoss()
+
+    def forward(self, input_ids, token_type_ids, attention_mask, labels=None):
+
+        last_hidden_state = self.bert(input_ids=input_ids,
+                                      token_type_ids=token_type_ids,
+                                      attention_mask=attention_mask)
+
+        lantent_z, recons_x = self.cvae_module(representation=last_hidden_state)
+        logits = self.linear3(lantent_z)
+        task_loss = self.task_loss_func(logits, labels)
+        recons_loss = self.reconstruction_loss_func()
+
+
 
 
 
