@@ -86,6 +86,7 @@ def train(model, tokenizer, checkpoint):
         model.train()
         epoch_loss = []
 
+        step = 0
         for batch in tqdm(train_dataloader, desc="Iteration"):
             model.zero_grad()
             # 设置tensor gpu运行
@@ -118,6 +119,10 @@ def train(model, tokenizer, checkpoint):
 
             optimizer.step()
             scheduler.step()
+            step += 1
+            if step % 500 == 0:
+              logger.debug("loss:"+str(np.array(epoch_loss).mean()))
+              logger.debug('learning_rate:' + str(optimizer.state_dict()['param_groups'][0]['lr']))
 
             # 保存模型
         output_dir = args.save_dir + "/checkpoint-" + str(epoch)
