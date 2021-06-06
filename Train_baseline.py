@@ -142,8 +142,8 @@ def train(model, tokenizer, checkpoint):
         dev_loss, dev_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.dev_file, checkpoint=epoch)
         test_loss, test_acc, test_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch)
         #print(test_loss, test_acc)
-        logger.info('【DEV】Train Epoch %d: train_loss=%.4f, acc=%.4f' % (epoch, dev_loss, dev_acc))
-        logger.info('【TEST】Train Epoch %d: train_loss=%.4f, acc=%.4f' % (epoch, test_loss, test_acc))
+        logger.info('【DEV】Train Epoch %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, dev_loss, dev_acc, dev_f1))
+        logger.info('【TEST】Train Epoch %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, test_loss, test_acc, test_f1))
 
 
 def test(model, tokenizer, test_file, checkpoint, output_dir=None):
@@ -248,4 +248,4 @@ if __name__ == "__main__":
         model.to(args.device)
         # 评估
         test_loss, test_acc, test_f1 = test(model, tokenizer, test_file=args.test_file, checkpoint=checkpoint)
-        logger.debug('Evaluate Epoch %d: test_loss=%.4f, test_acc=%.4f' % (checkpoint, test_loss, test_acc))
+        logger.debug('Evaluate Epoch %d: test_loss=%.4f, test_acc=%.4f, test_f1=%.4f' % (checkpoint, test_loss, test_acc, test_f1))
