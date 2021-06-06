@@ -141,7 +141,7 @@ def train(model, tokenizer, checkpoint):
         logger.debug("Saving optimizer and scheduler states to %s", output_dir)
 
         dev_loss, dev_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.dev_file, checkpoint=epoch)
-        test_loss, test_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch)
+        test_loss, test_acc, test_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch)
         # print(test_loss, test_acc)
         logger.info('【DEV】Train Epoch %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, dev_loss, dev_acc, dev_f1))
         logger.info('【TEST】Train Epoch %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, test_loss, test_acc, test_f1))
