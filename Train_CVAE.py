@@ -51,9 +51,9 @@ def train(model, tokenizer, checkpoint):
                                   shuffle=True)
 
     t_total = len(train_dataloader) * args.epochs
-
+    warmup_steps = int(args.warmup_steps * t_total)
     optimizer = AdamW(model.parameters(), lr=args.learning_rate, eps=args.adam_epsilon)
-    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=t_total)
+    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=t_total)
 
     if args.fp16:
         model, optimizer = amp.initialize(model, optimizer, opt_level=args.fptype)
@@ -73,7 +73,7 @@ def train(model, tokenizer, checkpoint):
     logger.debug("  Num Epochs = %d", args.epochs)
     logger.debug("  Batch size = %d", args.batch_size)
     logger.debug("  Total steps = %d", t_total)
-    logger.debug("  warmup steps = %d", int(args.warmup_steps * t_total))
+    logger.debug("  warmup steps = %d", warmup_steps)
     logger.debug("  Model_type = %s", args.model_type)
 
     # 没有历史断点，则从0开始
