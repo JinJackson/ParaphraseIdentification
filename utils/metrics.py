@@ -135,6 +135,3 @@ def acc(y_true, y_pred):
     y_pred_idx = np.argmax(y_pred, axis = 1)
     assert y_true_idx.shape == y_pred_idx.shape
     return 1.0 * np.sum(y_true_idx == y_pred_idx) / len(y_true)
-
-
-

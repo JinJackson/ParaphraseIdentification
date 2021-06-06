@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 from all_dataset import TrainData
 from utils.logger import getLogger
-from utils.metrics import acc
+from utils.classification_metrics import accuracy, f1_score
 
 
 def seed_torch(seed):
@@ -140,8 +140,8 @@ def train(model, tokenizer, checkpoint):
         torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
         logger.debug("Saving optimizer and scheduler states to %s", output_dir)
 
-        dev_loss, dev_acc = test(model=model, tokenizer=tokenizer, test_file=args.dev_file, checkpoint=epoch)
-        test_loss, test_acc = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch)
+        dev_loss, dev_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.dev_file, checkpoint=epoch)
+        test_loss, test_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch)
         #print(test_loss, test_acc)
         logger.info('【DEV】Train Epoch %d: train_loss=%.4f, acc=%.4f' % (epoch, dev_loss, dev_acc))
         logger.info('【TEST】Train Epoch %d: train_loss=%.4f, acc=%.4f' % (epoch, test_loss, test_acc))
@@ -197,11 +197,9 @@ def test(model, tokenizer, test_file, checkpoint, output_dir=None):
                 all_labels = np.concatenate((all_labels, labels.detach().cpu().numpy()), axis=0)
                 all_logits = np.concatenate((all_logits, logits.detach().cpu().numpy()), axis=0)
 
-    all_predict = (all_logits > 0) + 0
-    results = (all_predict == all_labels)
-    acc = results.sum() / len(all_predict)
-
-    return np.array(loss).mean(), acc
+    acc = accuracy(all_logits, all_labels)
+    f1 = f1_score(all_logits, all_labels)
+    return np.array(loss).mean(), acc, f1
 
 if __name__ == "__main__":
 
@@ -250,5 +248,5 @@ if __name__ == "__main__":
         model = MatchModel.from_pretrained(checkpoint_dir)
         model.to(args.device)
         # 评估
-        test_loss, test_acc = test(model, tokenizer, test_file=args.test_file, checkpoint=checkpoint)
+        test_loss, test_acc, test_f1 = test(model, tokenizer, test_file=args.test_file, checkpoint=checkpoint)
         logger.debug('Evaluate Epoch %d: test_loss=%.4f, test_acc=%.4f' % (checkpoint, test_loss, test_acc))

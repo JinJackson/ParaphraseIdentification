@@ -2,6 +2,8 @@ from parser1 import args
 from torch.utils.data import DataLoader
 from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup, RobertaTokenizer, AlbertTokenizer
 from model.MatchModel import BertMatchModel, RobertaMatchModel, AlbertMatchModel
+from model.GRUMatchModel import CVaeBertMatchModel
+from utils.classification_metrics import accuracy, f1_score
 import os, random
 import glob
 import torch
@@ -12,7 +14,6 @@ from tqdm import tqdm
 from all_dataset import TrainData
 from utils.logger import getLogger
 
-from utils.classification_metrics import accuracy, f1_score
 
 def seed_torch(seed):
     random.seed(seed)
@@ -140,13 +141,14 @@ def train(model, tokenizer, checkpoint):
         logger.debug("Saving optimizer and scheduler states to %s", output_dir)
 
         dev_loss, dev_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.dev_file, checkpoint=epoch)
-        test_loss, test_acc, test_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch)
-        #print(test_loss, test_acc)
+        test_loss, test_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch)
+        # print(test_loss, test_acc)
         logger.info('【DEV】Train Epoch %d: train_loss=%.4f, acc=%.4f' % (epoch, dev_loss, dev_acc))
         logger.info('【TEST】Train Epoch %d: train_loss=%.4f, acc=%.4f' % (epoch, test_loss, test_acc))
 
 
 def test(model, tokenizer, test_file, checkpoint, output_dir=None):
+    print(type(model))
     test_data = TrainData(data_file=test_file,
                           max_length=args.max_length,
                           tokenizer=tokenizer,
@@ -169,15 +171,13 @@ def test(model, tokenizer, test_file, checkpoint, output_dir=None):
 
     for batch in tqdm(test_dataLoader, desc="Evaluating"):
         with torch.no_grad():
+            batch = tuple(t.to(args.device) for t in batch[:-2])
             if 'roberta' in args.model_type:
-                batch = [t.to(args.device) for t in batch[:-2]]
                 input_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 attention_mask=attention_mask.long(),
                                 labels=labels)
-
             else:
-                batch = [t.to(args.device) for t in batch[:-2]]
                 input_ids, token_type_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 token_type_ids=token_type_ids.long(),
@@ -234,6 +234,7 @@ if __name__ == "__main__":
                                               do_lower_case=args.do_lower_case)
         model = MatchModel.from_pretrained(args.model_type if checkpoint == -1 else checkpoint_dir)
         model.to(args.device)
+        print('******************device', args.device)
         # 训练
         train(model, tokenizer, checkpoint)
 
@@ -242,8 +243,7 @@ if __name__ == "__main__":
         checkpoint = args.checkpoint
         checkpoint_dir = args.save_dir + "/checkpoint-" + str(checkpoint)
         tokenizer = Tokenizer.from_pretrained(checkpoint_dir,
-                                                  do_lower_case=args.do_lower_case,
-                                                  )
+                                              do_lower_case=args.do_lower_case,)
         model = MatchModel.from_pretrained(checkpoint_dir)
         model.to(args.device)
         # 评估

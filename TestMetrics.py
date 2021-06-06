@@ -1,15 +1,16 @@
 from model.MatchModel import BertMatchModel
 from tqdm import tqdm
-from dataset.all_dataset import TrainData
+from all_dataset import TrainData
 from torch.utils.data import DataLoader
 from transformers import BertTokenizer, BertModel
 import numpy as np
 import torch
-
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model = BertMatchModel.from_pretrained('bert-base-uncased')
-train_dataset = TrainData(data_file='data/MRPC/clean/test_clean.txt', max_length=100, tokenizer=tokenizer, model_type='bert')
-TrainDataLoader = DataLoader(dataset=train_dataset, batch_size=1, shuffle=False)
+from parser1 import args
+from utils.classification_metrics import accuracy, f1_score
+tokenizer = BertTokenizer.from_pretrained('bert-base-chinese')
+model = BertMatchModel.from_pretrained('bert-base-chinese')
+train_dataset = TrainData(data_file='data/LCQMC/clean/test_clean2.txt', max_length=args.max_length, tokenizer=tokenizer, model_type='bert')
+TrainDataLoader = DataLoader(dataset=train_dataset, batch_size=16, shuffle=False)
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 loss = []
@@ -21,14 +22,11 @@ model.eval()
 count = 0
 with torch.no_grad():
     for batch in tqdm(TrainDataLoader, desc='Iteration'):
-        batch = [t.to(device) for t in batch]
+        batch = [t.to(device) for t in batch[:-2]]
         input_ids, token_type_ids, attention_mask, labels = batch
         outputs = model(input_ids=input_ids.long(), token_type_ids=token_type_ids.long(), attention_mask=attention_mask, labels=labels)
         test_loss, logits = outputs
-        #print(logits)
-        #print(logits.item())
-        if logits.item() > 0:
-            count += 1
+
         loss.append(test_loss.item())
 
         if all_labels is None:
@@ -37,6 +35,7 @@ with torch.no_grad():
         else:
             all_labels = np.concatenate((all_labels, labels.detach().cpu().numpy()), axis=0)
             all_logits = np.concatenate((all_logits, logits.detach().cpu().numpy()), axis=0)
-all_predict = (all_logits > 0) + 0
-results = (all_predict == all_labels)
-acc = results.sum() / len(all_predict)
+
+    acc = accuracy(all_logits, all_labels)
+    f1 = f1_score(all_logits, all_labels)
+    print(acc, f1)
