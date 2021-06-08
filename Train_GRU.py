@@ -94,14 +94,12 @@ def train(model, tokenizer, checkpoint):
             batch = tuple(t.to(args.device) for t in batch[:-2])
 
             if 'roberta' in args.model_type:
-                batch = [t.to(args.device) for t in batch]
                 input_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 attention_mask=attention_mask.long(),
                                 labels=labels)
 
             else:
-                batch = [t.to(args.device) for t in batch]
                 input_ids, token_type_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 token_type_ids=token_type_ids.long(),
@@ -215,7 +213,7 @@ if __name__ == "__main__":
         MatchModel = AlbertMatchModel
         Tokenizer = AlbertTokenizer
     elif 'bert' in args.model_type:
-        MatchModel = BertMatchModel
+        MatchModel = CVaeBertMatchModel
         Tokenizer = BertTokenizer
 
     if args.do_train:

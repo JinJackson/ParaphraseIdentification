@@ -2,7 +2,7 @@ from parser1 import args
 from torch.utils.data import DataLoader
 from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup, RobertaTokenizer, AlbertTokenizer
 from model.MatchModel import BertMatchModel, RobertaMatchModel, AlbertMatchModel
-from model.CVAEMatchModel import CVaeBertMatchModel
+from model.VAEMatchModel import VaeBertMatchModel
 import os, random
 import glob
 import torch
@@ -72,9 +72,11 @@ def train(model, tokenizer, checkpoint):
     logger.debug("  Num examples = %d", len(train_dataloader))
     logger.debug("  Num Epochs = %d", args.epochs)
     logger.debug("  Batch size = %d", args.batch_size)
+    logger.debug("  learning_rate = %s", str(args.learning_rate))
     logger.debug("  Total steps = %d", t_total)
     logger.debug("  warmup steps = %d", warmup_steps)
     logger.debug("  Model_type = %s", args.model_type)
+
 
     # 没有历史断点，则从0开始
     if checkpoint < 0:
@@ -94,12 +96,14 @@ def train(model, tokenizer, checkpoint):
             batch = tuple(t.to(args.device) for t in batch[:-2])
 
             if 'roberta' in args.model_type:
+                batch = [t.to(args.device) for t in batch]
                 input_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 attention_mask=attention_mask.long(),
                                 labels=labels)
 
             else:
+                batch = [t.to(args.device) for t in batch]
                 input_ids, token_type_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 token_type_ids=token_type_ids.long(),
@@ -169,15 +173,14 @@ def test(model, tokenizer, test_file, checkpoint, output_dir=None):
 
     for batch in tqdm(test_dataLoader, desc="Evaluating"):
         with torch.no_grad():
+            batch = [t.to(args.device) for t in batch[:-2]]
             if 'roberta' in args.model_type:
-                batch = [t.to(args.device) for t in batch[:-2]]
                 input_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 attention_mask=attention_mask.long(),
                                 labels=labels)
 
             else:
-                batch = [t.to(args.device) for t in batch]
                 input_ids, token_type_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 token_type_ids=token_type_ids.long(),
@@ -214,7 +217,7 @@ if __name__ == "__main__":
         MatchModel = AlbertMatchModel
         Tokenizer = AlbertTokenizer
     elif 'bert' in args.model_type:
-        MatchModel = CVaeBertMatchModel
+        MatchModel = VaeBertMatchModel
         Tokenizer = BertTokenizer
 
     if args.do_train:
