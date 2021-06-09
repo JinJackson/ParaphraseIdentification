@@ -15,8 +15,8 @@ parser.add_argument('--do_lower_case', default=True)
 
 # TODO  常改参数
 #模型参数
-parser.add_argument('--hidden_size', default=56, type=int)
 parser.add_argument('--num_layers', default=2, type=int)
+parser.add_argument('--task_weight', default=0.5, type=float)
 
 
 #超参数

@@ -124,7 +124,7 @@ class VaeBertMatchModel(BertPreTrainedModel):
             task_loss = self.task_loss_func(logits, labels.float())
             recons_loss = self.reconstruction_loss_func(recons_x, last_hidden_state)
             KLD_loss = -0.5 * torch.sum(1 + logvar - mean.pow(2) - logvar.exp())
-            loss = 0.5 * task_loss + 0.5 * (recons_loss + KLD_loss)
+            loss = args.task_weight * task_loss + (1 - args.task_weight) * (recons_loss + KLD_loss)
             return loss, logits
         else:
             return logits
