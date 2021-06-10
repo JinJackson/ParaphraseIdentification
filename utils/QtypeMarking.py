@@ -48,5 +48,23 @@ all_taggings = []
 for origin_data, trans_data in tqdm(zip(all_datas, all_trans), total=len(all_datas)):
     origin_query1, origin_query2, label = origin_data
     if len(trans_data) == 4:
-        all_taggings.append([origin_query1, origin_query2, label, 'UNK', 'UNK'])
+        all_taggings.append([origin_query1, origin_query2, label, ['UNK'], ['UNK']])
     origin_query1, origin_query2, label = origin_data
+    try:
+        trans_query1, trans_query2, label = trans_data
+        qtype_words = ['what', 'who', 'how', 'which', 'when', 'where', 'why', 'others']
+        q_type1 = []
+        q_type2 = []
+        for qtype_word in qtype_words:
+            if qtype_word in trans_query1:
+                q_type1.append(qtype_word)
+            if q_type2 in trans_query2:
+                q_type2.append(qtype_word)
+        else:
+            if not q_type1:
+                q_type1 = ['others']
+            if not q_type2:
+                q_type2 = ['others']
+        all_taggings.append([trans_query1, trans_query2, label, q_type1, q_type2])
+    except:
+        all_taggings.append([origin_query1, origin_query2, label, ['UNK'], ['UNK']])
