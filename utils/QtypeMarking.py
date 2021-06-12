@@ -50,9 +50,8 @@ def tagging_data(origin_datas, trans_datas):
         if len(trans_data) == 4:
             all_taggings.append([origin_query1, origin_query2, label, ['UNK'], ['UNK']])
             continue
-        origin_query1, origin_query2, label = origin_data
         try:
-            trans_query1, trans_query2, label = trans_data
+            trans_query1, trans_query2, _ = trans_data
             qtype_words = ['what', 'who', 'how', 'which', 'when', 'where', 'why']
             q_type1 = []
             q_type2 = []
@@ -76,28 +75,29 @@ def tagging_data(origin_datas, trans_datas):
 
 # # 写入数据
 def written_file(labeled_data, written_file):
+    dict_q_words = {'what': '事物', 'who': '人物', 'how': '做法', 'which': '选择', 'when': '时间', 'where': '地点', 'why': '原因',
+                    'others': '其他', 'UNK': '未知'}
     with open(written_file, 'w', encoding='utf-8') as writer:
         for a_data in labeled_data:
             query1, query2, label, qmark1, qmark2 = a_data
             str_qmark1 = ''
             for q_word in qmark1:
-                str_qmark1 += (q_word + ' ')
+                str_qmark1 += (dict_q_words[q_word] + ',')
             str_qmark2 = ''
             for q_word in qmark2:
-                str_qmark2 += (q_word + ' ')
-            line = query1 + query2
-
-
+                str_qmark2 += (dict_q_words[q_word] + ',')
+            line = query1 + '[SEP]' + str_qmark1.rstrip(',') + '\t' + query2 + '[SEP]' + str_qmark2.rstrip(',') + '\t' + label + '\n'
+            writer.write(line)
 
 
 if __name__ == '__main__':
-
+    data_file = '../data/LCQMC/clean/dev_clean.txt'
+    translate_file = '../data/LCQMC/translation/dev_en.txt'
+    written_filename = '../data/LCQMC/tagging/dev_tag.txt'
     origin_datas = readDataFromFile(data_file)
     trans_datas = readTranslateData(translate_file)
     print(len(origin_datas), len(trans_datas))
     all_tagging_datas = tagging_data(origin_datas, trans_datas)
     print(len(all_tagging_datas))
-    for i in range(5):
-        print(all_tagging_datas[i])
-    # for data in all_taggings:
-    #     print(data)
+    written_file(all_tagging_datas, written_filename)
+
