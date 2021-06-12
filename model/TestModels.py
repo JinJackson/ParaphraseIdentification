@@ -40,11 +40,12 @@
 # print(attention_mask)
 
 datas = []
-with open('../data/LCQMC/tagging/train_tag.txt', 'r', encoding='utf-8') as reader:
+with open('../data/BQ/clean/train_clean.txt', 'r', encoding='utf-8') as reader:
     lines = reader.readlines()
     for line in lines:
         pair = line.strip().split('\t')
         datas.append(pair)
+        print(pair)
 
 for data in datas:
     if len(data) != 3:
