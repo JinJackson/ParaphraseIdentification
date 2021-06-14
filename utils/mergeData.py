@@ -1,12 +1,13 @@
-nums = 50
+# 更改一下文件数量！！！！！！！！！！！！！！
+nums = 400
 
-data_file_path = '../data/LCQMC/translation/en_split/test/'
-written_file = '../data/LCQMC/translation/test_en.txt'
+data_file_path = '../data/BQ/translation/en_split/train/'
+written_file = '../data/BQ/translation/train_en.txt'
 
 all_datas = []
 wrong_data = []
 for i in range(0, nums):
-    with open(data_file_path + 'test_split' + str(i + 1) + '.txt', 'r', encoding='utf-8') as reader:
+    with open(data_file_path + 'train_split' + str(i + 1) + '.txt', 'r', encoding='utf-8') as reader:
         lines = reader.readlines()
         for j in range(len(lines)):
             line = lines[j]

@@ -1,6 +1,6 @@
 from all_dataset import readDataFromFile
-data_file = '../data/LCQMC/clean/test_clean.txt'
-write_file_direc = '../data/LCQMC/translation/origin_split/test/'
+data_file = '../data/BQ/clean/test_clean.txt'
+write_file_direc = '../data/BQ/translation/origin_split/test/'
 
 max_length = 250 #每个文件最长长度数量
 all_datas = readDataFromFile(data_file)

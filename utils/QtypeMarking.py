@@ -91,9 +91,9 @@ def written_file(labeled_data, written_file):
 
 
 if __name__ == '__main__':
-    data_file = '../data/LCQMC/clean/dev_clean.txt'
-    translate_file = '../data/LCQMC/translation/dev_en.txt'
-    written_filename = '../data/LCQMC/tagging/dev_tag.txt'
+    data_file = '../data/BQ/clean/test_clean.txt'
+    translate_file = '../data/BQ/translation/test_en.txt'
+    written_filename = '../data/BQ/tagging/test_tag.txt'
     origin_datas = readDataFromFile(data_file)
     trans_datas = readTranslateData(translate_file)
     print(len(origin_datas), len(trans_datas))

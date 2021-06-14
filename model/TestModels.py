@@ -40,13 +40,17 @@
 # print(attention_mask)
 
 datas = []
-with open('../data/BQ/clean/train_clean.txt', 'r', encoding='utf-8') as reader:
+wrong_case = []
+with open('../data/BQ/translation/train_en.txt', 'r', encoding='utf-8') as reader:
     lines = reader.readlines()
     for line in lines:
-        pair = line.strip().split('\t')
+        pair = line.strip().split('||')
         datas.append(pair)
-        print(pair)
-
-for data in datas:
-    if len(data) != 3:
-        print(data)
+        if len(pair) != 3:
+            if len(pair) == 2:
+                pair = line.strip().replace('||', '|').split('|')
+                if len(pair) == 3:
+                    wrong_case.append(pair)
+print(wrong_case)
+print(len(wrong_case))
+print(len(datas))

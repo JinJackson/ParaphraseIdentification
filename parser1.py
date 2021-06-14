@@ -7,13 +7,13 @@ parser = argparse.ArgumentParser()
 # parser.add_argument('--dev_file', default='data/LCQMC/clean/dev_clean.txt')
 # parser.add_argument('--test_file', default='data/LCQMC/clean/test_clean.txt')
 #cvae
-parser.add_argument('--train_file', default='data/LCQMC/tagging/train_tag.txt')
-parser.add_argument('--dev_file', default='data/LCQMC/tagging/dev_tag.txt')
-parser.add_argument('--test_file', default='data/LCQMC/tagging/test_tag.txt')
+parser.add_argument('--train_file', default='data/BQ/tagging/train_tag.txt')
+parser.add_argument('--dev_file', default='data/BQ/tagging/dev_tag.txt')
+parser.add_argument('--test_file', default='data/BQ/tagging/test_tag.txt')
 
 parser.add_argument('--model_type', default='bert-base-chinese')
 parser.add_argument('--seed', default=2048, type=int)
-parser.add_argument('--save_dir', default='result/bert/VAE/checkpoints')
+parser.add_argument('--save_dir', default='result/BQ/bert/VAE/checkpoints')
 parser.add_argument('--do_train', default=True)
 parser.add_argument('--do_lower_case', default=True)
 
