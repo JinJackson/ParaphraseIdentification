@@ -1,56 +1,24 @@
-# from transformers import BertModel, BertTokenizer
-# from model.VAEMatchModel import VaeBertMatchModel
-# import torch
-# import torch.nn as nn
-#
-# device = 'cuda' if torch.cuda.is_available() else 'cpu'
-# tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-#
-# Text = 'I feel good today.'
-#
-# inputs = tokenizer(Text, max_length=128, padding='max_length', return_tensors='pt')
-# labels = torch.tensor([[1]]).float()
-# # inputs.to(device)
-# model = VaeBertMatchModel.from_pretrained('bert-base-uncased')
-# # model.to(device)
-#
-# loss, logits = model(**inputs, labels=labels)
-#
-# # loss.backward()
-#
-#
-# print(loss, logits)
-#
-# from transformers import BertTokenizer
-# tokenizer = BertTokenizer.from_pretrained('bert-base-chinese')
-# text = '这是什么蔬菜啊[SEP]事物	这是什么蔬菜呀？[SEP]事物	1'
-# data = text.strip().split('\t')
-# query1, query2, label = data[0], data[1], int(data[2])
-# tokenzied_dict = tokenizer.encode_plus(text=query1,
-#                                        text_pair=query2,
-#                                        max_length=128,
-#                                        truncation=True,
-#                                        padding='max_length')
-# input_ids = tokenzied_dict['input_ids']
-# token_type_ids = tokenzied_dict['token_type_ids']
-# attention_mask = tokenzied_dict['attention_mask']
-# print(input_ids)
-# print(token_type_ids)
-# print(token_type_ids.index(1))
-# print(attention_mask)
+from model.MatchModel import ErnieMatchModel
+from transformers import AutoTokenizer
+import torch
 
-datas = []
-wrong_case = []
-with open('../data/BQ/translation/train_en.txt', 'r', encoding='utf-8') as reader:
-    lines = reader.readlines()
-    for line in lines:
-        pair = line.strip().split('||')
-        datas.append(pair)
-        if len(pair) != 3:
-            if len(pair) == 2:
-                pair = line.strip().replace('||', '|').split('|')
-                if len(pair) == 3:
-                    wrong_case.append(pair)
-print(wrong_case)
-print(len(wrong_case))
-print(len(datas))
+model = ErnieMatchModel.from_pretrained("nghuyong/ernie-1.0")
+tokenizer = AutoTokenizer.from_pretrained("nghuyong/ernie-1.0")
+
+#print(model)
+
+text = '今天的天气真不错'
+label = torch.tensor([[1]])
+
+inputs = tokenizer.encode_plus(text=text, return_tensors='pt')
+
+input_ids = inputs['input_ids']
+token_type_ids = inputs['token_type_ids']
+attention_mask = inputs['attention_mask']
+
+outputs = model(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=label)
+
+loss, logits = outputs
+
+print(loss)
+print(logits)
