@@ -60,6 +60,21 @@ class GRUDecoder(nn.Module):
         return outputs
 
 
+class LinearDecoder(nn.Module):
+    def __init__(self, input_size):
+        super(LinearDecoder, self).__init__()
+        self.linear1 = nn.Linear(input_size//2, input_size)
+        self.act1 = nn.ReLU()
+        self.linear2 = nn.linear(input_size, input_size)
+        self.act2 = nn.ReLU()
+
+    def forward(self, inputs):
+        outputs1 = self.act1(self.linear1(inputs))
+        outputs2 = self.act2(self.linear2(outputs1))
+        return outputs2
+
+
+
 # CVAE Module
 class CVaeModel(nn.Module):
     # output:mean, logvar, lantent_z, recons_x
@@ -69,16 +84,20 @@ class CVaeModel(nn.Module):
         eps = torch.randn_like(std)
         return eps.mul(std).add_(mu)
 
-    def __init__(self, input_size, num_layers, dropout):
+    def __init__(self, input_size, num_layers, dropout, decoder_type):
         super(CVaeModel, self).__init__()
         # input_shape: [batch_size, seq_len, input_size]
         # output(mean&logvar): [[batch_size, seq_len, hidden_size//2], [batch_size, seq_len, hidden_size//2]]
         self.encoder_module = GRUEncoder(input_size=input_size,
                                          num_layers=num_layers,
                                          dropout=dropout)
-        self.decoder_module = GRUDecoder(input_size=input_size,
-                                         num_layers=num_layers,
-                                         dropout=dropout)
+
+        if decoder_type == 'linear':
+            self.decoder_module = LinearDecoder(input_size=input_size)
+        elif decoder_type == 'gru':
+            self.decoder_module = GRUDecoder(input_size=input_size,
+                                             num_layers=num_layers,
+                                             dropout=dropout)
 
     def forward(self, representation):
         mean, logvar, encoder_outputs = self.encoder_module(representation)
@@ -103,7 +122,8 @@ class CVaeBertMatchModel(BertPreTrainedModel):
         self.num_layers = args.num_layers
         self.cvae_module = CVaeModel(input_size=self.input_size,
                                      num_layers=self.num_layers,
-                                     dropout=self.dropout)
+                                     dropout=self.dropout,
+                                     decoder_type=args.decoder_type)
         # 加一个FFN
         # self.linear1 = nn.Linear(seq_len*hidden_size, seq_len*hidden_size*2)
         # self.linear2 = nn.Linear(seq_len*hidden_size*2, seq_len*hidden_size)

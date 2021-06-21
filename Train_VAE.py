@@ -1,6 +1,6 @@
 from parser1 import args
 from torch.utils.data import DataLoader
-from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup, RobertaTokenizer, AlbertTokenizer
+from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup, RobertaTokenizer, AlbertTokenizer, AutoTokenizer
 from model.MatchModel import BertMatchModel, RobertaMatchModel, AlbertMatchModel
 from model.VAEMatchModel import VaeBertMatchModel
 import os, random
@@ -68,14 +68,15 @@ def train(model, tokenizer, checkpoint):
             amp.load_state_dict(torch.load(os.path.join(checkpoint_dir, "amp.pt")))
 
     # 开始训练
-    logger.debug("***** Running training *****")
-    logger.debug("  Num examples = %d", len(train_dataloader))
-    logger.debug("  Num Epochs = %d", args.epochs)
-    logger.debug("  Batch size = %d", args.batch_size)
-    logger.debug("  learning_rate = %s", str(args.learning_rate))
-    logger.debug("  Total steps = %d", t_total)
-    logger.debug("  warmup steps = %d", warmup_steps)
-    logger.debug("  Model_type = %s", args.model_type)
+    logger.info("***** Running training *****")
+    logger.info("  Num examples = %d", len(train_dataloader))
+    logger.info("  Num Epochs = %d", args.epochs)
+    logger.info("  Batch size = %d", args.batch_size)
+    logger.info("  learning_rate = %s", str(args.learning_rate))
+    logger.info("  Total steps = %d", t_total)
+    logger.info("  warmup steps = %d", warmup_steps)
+    logger.info("  Model_type = %s", args.model_type)
+    logger.info("  Decoder_type = %s", args.decoder_type)
 
 
     # 没有历史断点，则从0开始
@@ -219,6 +220,9 @@ if __name__ == "__main__":
     elif 'bert' in args.model_type:
         MatchModel = VaeBertMatchModel
         Tokenizer = BertTokenizer
+    elif 'ernie' in args.model_type:
+        MatchModel = VaeBertMatchModel
+        Tokenizer = AutoTokenizer
 
     if args.do_train:
         # train： 接着未训练完checkpoint继续训练
