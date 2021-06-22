@@ -1,24 +1,47 @@
-from model.MatchModel import ErnieMatchModel
-from transformers import AutoTokenizer
+from transformers import BertModel, BertPreTrainedModel, BertForMaskedLM, BertTokenizer
+from transformers.modeling_bert import BertOnlyMLMHead
 import torch
+import torch.nn as nn
+from torch.nn import CrossEntropyLoss
 
-model = ErnieMatchModel.from_pretrained("nghuyong/ernie-1.0")
-tokenizer = AutoTokenizer.from_pretrained("nghuyong/ernie-1.0")
+class TestModel(BertPreTrainedModel):
+    def __init__(self, config):
+        super(TestModel, self).__init__(config)
+        self.bert = BertModel(config)
+        self.input_size = config.hidden_size
+        self.GRU_Layer = nn.GRU(input_size=self.input_size,
+                                hidden_size=self.input_size//2,
+                                num_layers=2,
+                                bias=True,
+                                batch_first=True,
+                                dropout=dropout,
+                                bidirectional=True)
+        self.cls = BertOnlyMLMHead(config)
 
-#print(model)
+    def forward(self, input_ids, token_type_ids, attention_mask, labels=None):
+        outputs = self.bert(input_ids, token_type_ids, attention_mask)
+        sequence_outputs, cls = outputs[:2]
+        prediction_scores = self.cls(sequence_outputs)
+        masked_lm_loss = None
+        if labels is not None:
+            loss_fct = CrossEntropyLoss()  # -100 index = padding token
+            masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
 
-text = '今天的天气真不错'
-label = torch.tensor([[1]])
+        output = (prediction_scores,) + outputs[2:]
+        return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
 
-inputs = tokenizer.encode_plus(text=text, return_tensors='pt')
 
-input_ids = inputs['input_ids']
-token_type_ids = inputs['token_type_ids']
-attention_mask = inputs['attention_mask']
+model = TestModel.from_pretrained('bert-base-uncased')
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-outputs = model(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=label)
+text = 'I love New [MASK] city.'
+labels = tokenizer("I love New York city.", return_tensors="pt")["input_ids"]
 
-loss, logits = outputs
+inputs = tokenizer(text=text, return_tensors='pt')
+outputs = model(**inputs, labels=labels)
 
-print(loss)
-print(logits)
+print(len(outputs))
+print(outputs[0].shape, outputs[1].shape)
+print(outputs[0])
+print(outputs[1])
+
