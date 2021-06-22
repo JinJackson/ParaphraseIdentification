@@ -1,5 +1,5 @@
 from transformers import BertModel, AlbertModel, RobertaModel, BertPreTrainedModel, AlbertPreTrainedModel
-from transformers import AutoModel, PreTrainedModel
+from transformers import AutoModel, PreTrainedModel, AutoModelForPreTraining, AutoModelForQuestionAnswering
 import torch.nn as nn
 
 # BERT
@@ -22,16 +22,16 @@ class BertMatchModel(BertPreTrainedModel):
         return loss, logits
 
 # ERNIE
-class ErnieMatchModel(AutoModel):
+class ErnieMatchModel(BertPreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
-        self.ernie = AutoModel.from_pretrained(config)
+        self.bert = BertModel(config)
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
         self.linear = nn.Linear(config.hidden_size, 1)
         self.loss_func = nn.BCEWithLogitsLoss()
 
     def forward(self, input_ids, token_type_ids, attention_mask, labels=None):
-        outputs = self.ernie(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask)
+        outputs = self.bert(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask)
         pooler_output = outputs[1]
         logits = self.linear(self.dropout(pooler_output))
         # logits = self.linear(pooler_output)
