@@ -3,7 +3,7 @@ from transformers.modeling_bert import BertOnlyMLMHead
 import torch
 import torch.nn as nn
 from torch.nn import CrossEntropyLoss
-<<<<<<< HEAD
+
 from attention import attention
 
 # class TestModel(BertPreTrainedModel):
