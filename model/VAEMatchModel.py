@@ -135,6 +135,7 @@ class VaeBertMatchModel(BertPreTrainedModel):
                             attention_mask=attention_mask)
 
         last_hidden_state = outputs[0]
+
         mean, logvar, latent_z, recons_x, encoder_outputs = self.vae_module(representation=last_hidden_state)
         cls = encoder_outputs[:, 0, :]
         logits = self.linear3(cls)
