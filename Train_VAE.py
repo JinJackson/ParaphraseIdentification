@@ -94,21 +94,23 @@ def train(model, tokenizer, checkpoint):
         for batch in tqdm(train_dataloader, desc="Iteration"):
             model.zero_grad()
             # 设置tensor gpu运行
+            query1, query2 = batch[-2:]
             batch = tuple(t.to(args.device) for t in batch[:-2])
 
             if 'roberta' in args.model_type:
-                batch = [t.to(args.device) for t in batch]
                 input_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 attention_mask=attention_mask.long(),
                                 labels=labels)
 
             else:
-                batch = [t.to(args.device) for t in batch]
                 input_ids, token_type_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 token_type_ids=token_type_ids.long(),
                                 attention_mask=attention_mask.long(),
+                                query1=query1,
+                                query2=query2,
+                                mask_rate=args.mask_rate,
                                 labels=labels)
 
             loss = outputs[0]

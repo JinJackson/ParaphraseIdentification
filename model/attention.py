@@ -2,6 +2,8 @@ import torch
 import math, copy
 import torch.nn.functional as F
 import torch.nn as nn
+import numpy as np
+from parser1 import args
 
 
 def clones(module, N):
@@ -9,10 +11,14 @@ def clones(module, N):
 
 
 def attention(query, key, value, mask=None, dropout=None):
-    d_k = query.size(-1)
+    d_k = query.size(1)
     scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(d_k)
-
     if mask is not None:
+        attn_length = list(mask.sum(dim=1).cpu().detach().numpy())
+        mask = np.zeros((mask.size(0), d_k, d_k))
+        for k, mask_matrix in zip(attn_length, mask):
+            mask_matrix[:k, :k] += 1
+        mask = torch.tensor(mask).to(args.device)
         scores = scores.masked_fill(mask == 0, -1e9)
     p_attn = F.softmax(scores, dim=-1)
     if dropout is not None:
