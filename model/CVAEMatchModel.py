@@ -65,7 +65,7 @@ class LinearDecoder(nn.Module):
         super(LinearDecoder, self).__init__()
         self.linear1 = nn.Linear(input_size//2, input_size)
         self.act1 = nn.ReLU()
-        self.linear2 = nn.linear(input_size, input_size)
+        self.linear2 = nn.Linear(input_size, input_size)
         self.act2 = nn.ReLU()
 
     def forward(self, inputs):
