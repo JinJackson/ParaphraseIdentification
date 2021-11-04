@@ -175,7 +175,7 @@ class VaeBertMatchModel(BertPreTrainedModel):
                 masked_lm_labels = input_ids
                 loss_fct = CrossEntropyLoss()  # -100 index = padding token
                 masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), masked_lm_labels.view(-1))
-                print(masked_lm_loss)
+                # print(masked_lm_loss)
             task_loss = self.task_loss_func(logits, labels.float())
             recons_loss = self.reconstruction_loss_func(recons_x, last_hidden_state)
             KLD_loss = -0.5 * torch.sum(1 + logvar - mean.pow(2) - logvar.exp())
