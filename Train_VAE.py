@@ -95,7 +95,7 @@ def train(model, tokenizer, checkpoint, round):
         max_dev_acc = 0
 
         step = 0
-        for batch in tqdm(train_dataloader, desc="Iteration",ncols=50):
+        for batch in tqdm(train_dataloader, desc="Iteration", ncols=50):
             model.zero_grad()
             # 设置tensor gpu运行
             query1, query2 = batch[-2:]
