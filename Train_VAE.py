@@ -95,7 +95,7 @@ def train(model, tokenizer, checkpoint, round):
         max_dev_acc = 0
 
         step = 0
-        for batch in tqdm(train_dataloader, desc="Iteration"):
+        for batch in tqdm(train_dataloader, desc="Iteration",ncols=50):
             model.zero_grad()
             # 设置tensor gpu运行
             query1, query2 = batch[-2:]
@@ -212,7 +212,7 @@ def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
 
     model.eval()
 
-    for batch in tqdm(test_dataLoader, desc="Evaluating"):
+    for batch in tqdm(test_dataLoader, desc="Evaluating", ncols=50):
         with torch.no_grad():
             query1, query2 = batch[-2:]
             batch = [t.to(args.device) for t in batch[:-2]]
