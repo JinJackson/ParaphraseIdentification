@@ -165,7 +165,7 @@ class VaeBertMatchModel(BertPreTrainedModel):
                         mask_idx = sort_idx[i]
                         elem[mask_idx] = 103
                 masked_input_ids = torch.tensor(masked_input_ids).to(args.device)
-                # 将mask传入模型计算结果
+                # 将mask传入模型计算结果·
                 masked_outputs = self.bert(input_ids=masked_input_ids,
                                            token_type_ids=token_type_ids,
                                            attention_mask=attention_mask)

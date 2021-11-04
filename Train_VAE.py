@@ -32,7 +32,7 @@ if args.seed > -1:
 
 logger = None
 
-def train(model, tokenizer, checkpoint):
+def train(model, tokenizer, checkpoint, round):
     if args.fp16:
         try:
             from apex import amp
@@ -59,7 +59,7 @@ def train(model, tokenizer, checkpoint):
         model, optimizer = amp.initialize(model, optimizer, opt_level=args.fptype)
 
     # 读取断点 optimizer、scheduler
-    checkpoint_dir = args.save_dir + "/checkpoint-" + str(checkpoint)
+    checkpoint_dir = args.save_dir + "/checkpoint-" + str(checkpoint) + '-' + str(round)
     if os.path.isfile(os.path.join(checkpoint_dir, "optimizer.pt")):
         # Load in optimizer and scheduler states
         optimizer.load_state_dict(torch.load(os.path.join(checkpoint_dir, "optimizer.pt")))
@@ -77,18 +77,22 @@ def train(model, tokenizer, checkpoint):
     logger.info("  warmup steps = %d", warmup_steps)
     logger.info("  Model_type = %s", args.model_type)
     logger.info("  Decoder_type = %s", args.decoder_type)
+    logger.info("  MLM task = %s", str(args.mlm))
 
 
     # 没有历史断点，则从0开始
     if checkpoint < 0:
         checkpoint = 0
+        round = 0
     else:
         checkpoint += 1
+        round += 1
 
     logger.debug("  Start Batch = %d", checkpoint)
     for epoch in range(checkpoint, args.epochs):
         model.train()
         epoch_loss = []
+        max_dev_acc = 0
 
         step = 0
         for batch in tqdm(train_dataloader, desc="Iteration"):
@@ -127,11 +131,41 @@ def train(model, tokenizer, checkpoint):
             scheduler.step()
             step += 1
             if step % 500 == 0:
-              logger.debug("loss:"+str(np.array(epoch_loss).mean()))
-              logger.debug('learning_rate:' + str(optimizer.state_dict()['param_groups'][0]['lr']))
+                logger.debug("loss:"+str(np.array(epoch_loss).mean()))
+                logger.debug('learning_rate:' + str(optimizer.state_dict()['param_groups'][0]['lr']))
+            if step % 1000 == 0:
+                round += 1
+                dev_loss, dev_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.dev_file,
+                                                 checkpoint=epoch, round=round)
+                logger.info(
+                    '【DEV】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (
+                    epoch, round, dev_loss, dev_acc, dev_f1))
+                if dev_acc > max_dev_acc:
+                    max_dev_acc = dev_acc
+                    test_loss, test_acc, test_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file,
+                                                        checkpoint=epoch, round=round)
+                    output_dir = args.save_dir + "/checkpoint-" + str(epoch) + '-' + str(round)
+                    if not os.path.exists(output_dir):
+                        os.makedirs(output_dir)
+                    model_to_save = (model.module if hasattr(model, "module") else model)
+                    model_to_save.save_pretrained(output_dir)
+                    tokenizer.save_pretrained(output_dir)
+                    torch.save(args, os.path.join(output_dir, "training_args.bin"))
+                    logger.debug("Saving model checkpoint to %s", output_dir)
+                    if args.fp16:
+                        torch.save(amp.state_dict(), os.path.join(output_dir, "amp.pt"))
+                    torch.save(optimizer.state_dict(), os.path.join(output_dir, "optimizer.pt"))
+                    torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
+                    logger.debug("Saving optimizer and scheduler states to %s", output_dir)
+
+                    logger.info(
+                        '【DEV】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, round, dev_loss, dev_acc, dev_f1))
+                    logger.info(
+                        '【TEST】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, round, test_loss, test_acc, test_f1))
+                model.train()
 
             # 保存模型
-        output_dir = args.save_dir + "/checkpoint-" + str(epoch)
+        output_dir = args.save_dir + "/checkpoint-" + str(epoch) + '-' + str(round)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         model_to_save = (model.module if hasattr(model, "module") else model)
@@ -145,14 +179,18 @@ def train(model, tokenizer, checkpoint):
         torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
         logger.debug("Saving optimizer and scheduler states to %s", output_dir)
 
-        dev_loss, dev_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.dev_file, checkpoint=epoch)
-        test_loss, test_acc, test_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch)
+        dev_loss, dev_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.dev_file, checkpoint=epoch, round=round)
+        test_loss, test_acc, test_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch, round=round)
         #print(test_loss, test_acc)
-        logger.info('【DEV】Train Epoch %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, dev_loss, dev_acc, dev_f1))
-        logger.info('【TEST】Train Epoch %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, test_loss, test_acc, test_f1))
+        logger.info(
+            '【DEV】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (
+            epoch, round, dev_loss, dev_acc, dev_f1))
+        logger.info(
+            '【TEST】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (
+            epoch, round, test_loss, test_acc, test_f1))
 
 
-def test(model, tokenizer, test_file, checkpoint, output_dir=None):
+def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
     print(type(model))
     test_data = TrainData(data_file=test_file,
                           max_length=args.max_length,
@@ -163,7 +201,7 @@ def test(model, tokenizer, test_file, checkpoint, output_dir=None):
                                  batch_size=args.batch_size,
                                  shuffle=False)
 
-    logger.debug("***** Running test {} *****".format(checkpoint))
+    logger.debug("***** Running test {} for round {}*****".format(checkpoint, round))
     logger.debug("  Num examples = %d", len(test_dataLoader))
     logger.debug("  Batch size = %d", args.batch_size)
 
@@ -176,6 +214,7 @@ def test(model, tokenizer, test_file, checkpoint, output_dir=None):
 
     for batch in tqdm(test_dataLoader, desc="Evaluating"):
         with torch.no_grad():
+            query1, query2 = batch[-2:]
             batch = [t.to(args.device) for t in batch[:-2]]
             if 'roberta' in args.model_type:
                 input_ids, attention_mask, labels = batch
@@ -188,6 +227,9 @@ def test(model, tokenizer, test_file, checkpoint, output_dir=None):
                 outputs = model(input_ids=input_ids.long(),
                                 token_type_ids=token_type_ids.long(),
                                 attention_mask=attention_mask.long(),
+                                query1=query1,
+                                query2=query2,
+                                mask_rate=None,
                                 labels=labels)
 
             eval_loss, logits = outputs[:2]
@@ -204,6 +246,7 @@ def test(model, tokenizer, test_file, checkpoint, output_dir=None):
     acc = accuracy(all_logits, all_labels)
     f1 = f1_score(all_logits, all_labels)
     return np.array(loss).mean(), acc, f1
+
 
 if __name__ == "__main__":
 
@@ -229,12 +272,14 @@ if __name__ == "__main__":
     if args.do_train:
         # train： 接着未训练完checkpoint继续训练
         checkpoint = -1
+        round = -1
         for checkpoint_dir_name in glob.glob(args.save_dir + "/*"):
             try:
                 checkpoint = max(checkpoint, int(checkpoint_dir_name.split('/')[-1].split('-')[1]))
+                round = max(round, int(checkpoint_dir_name.split('/')[-1].split('-')[-1]))
             except Exception as e:
                 pass
-        checkpoint_dir = args.save_dir + "/checkpoint-" + str(checkpoint)
+        checkpoint_dir = args.save_dir + "/checkpoint-" + str(checkpoint) + '-' + str(round)
         if checkpoint > -1:
             logger.debug(f" Load Model from {checkpoint_dir}")
 
@@ -243,17 +288,18 @@ if __name__ == "__main__":
         model = MatchModel.from_pretrained(args.model_type if checkpoint == -1 else checkpoint_dir)
         model.to(args.device)
         # 训练
-        train(model, tokenizer, checkpoint)
+        train(model, tokenizer, checkpoint, round)
 
     else:
         # eval：指定模型
         checkpoint = args.checkpoint
-        checkpoint_dir = args.save_dir + "/checkpoint-" + str(checkpoint)
+        round = args.round
+        checkpoint_dir = args.save_dir + "/checkpoint-" + str(checkpoint) + '-' + str(round)
         tokenizer = Tokenizer.from_pretrained(checkpoint_dir,
                                               do_lower_case=args.do_lower_case)
         model = MatchModel.from_pretrained(checkpoint_dir)
         model.to(args.device)
         # 评估
-        test_loss, test_acc, test_f1 = test(model, tokenizer, test_file=args.test_file, checkpoint=checkpoint)
+        test_loss, test_acc, test_f1 = test(model, tokenizer, test_file=args.test_file, checkpoint=checkpoint, round=round)
         logger.debug('Evaluate Epoch %d: test_loss=%.4f, test_acc=%.4f, test_f1=%.4f' % (
         checkpoint, test_loss, test_acc, test_f1))
