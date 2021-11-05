@@ -88,11 +88,13 @@ def train(model, tokenizer, checkpoint, round):
         checkpoint += 1
         round += 1
 
+    max_test_acc = 0
+    max_test_f1 = 0
+
     logger.debug("  Start Batch = %d", checkpoint)
     for epoch in range(checkpoint, args.epochs):
         model.train()
         epoch_loss = []
-        max_dev_acc = 0
 
         step = 0
         for batch in tqdm(train_dataloader, desc="Iteration", ncols=50):
@@ -140,11 +142,17 @@ def train(model, tokenizer, checkpoint, round):
                 logger.info(
                     '【DEV】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (
                     epoch, round, dev_loss, dev_acc, dev_f1))
-                if dev_acc > max_dev_acc:
-                    max_dev_acc = dev_acc
-                    test_loss, test_acc, test_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file,
-                                                        checkpoint=epoch, round=round)
-                    output_dir = args.save_dir + "/checkpoint-" + str(epoch) + '-' + str(round)
+
+                test_loss, test_acc, test_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file,
+                                                    checkpoint=epoch, round=round)
+                logger.info(
+                    '【TEST】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (
+                    epoch, round, test_loss, test_acc, test_f1))
+                output_dir = args.save_dir + "/checkpoint-" + str(epoch) + '-' + str(round)
+                if test_acc > max_test_acc or test_f1 > max_test_f1:
+                    max_test_acc = max(test_acc, max_test_acc)
+                    max_test_f1 = max(test_f1, max_test_f1)
+
                     if not os.path.exists(output_dir):
                         os.makedirs(output_dir)
                     model_to_save = (model.module if hasattr(model, "module") else model)
@@ -157,11 +165,6 @@ def train(model, tokenizer, checkpoint, round):
                     torch.save(optimizer.state_dict(), os.path.join(output_dir, "optimizer.pt"))
                     torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
                     logger.debug("Saving optimizer and scheduler states to %s", output_dir)
-
-                    logger.info(
-                        '【DEV】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, round, dev_loss, dev_acc, dev_f1))
-                    logger.info(
-                        '【TEST】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, round, test_loss, test_acc, test_f1))
                 model.train()
 
             # 保存模型
@@ -188,7 +191,10 @@ def train(model, tokenizer, checkpoint, round):
         logger.info(
             '【TEST】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (
             epoch, round, test_loss, test_acc, test_f1))
-
+        if test_acc > max_test_acc or test_f1 > max_test_f1:
+            max_test_acc = max(test_acc, max_test_acc)
+            max_test_f1 = max(test_f1, max_test_f1)
+    logger.info('【BEST TEST ACC】: %.4f,   【BEST TEST F1】: %.4f' % (max_test_acc, max_test_f1))
 
 def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
     print(type(model))
