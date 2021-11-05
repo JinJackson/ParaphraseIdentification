@@ -24,7 +24,7 @@ parser.add_argument('--num_layers', default=2, type=int)
 parser.add_argument('--task_weight', default=0.9, type=float)
 parser.add_argument('--decoder_type', default='gru', type=str)
 parser.add_argument('--mask_rate', default=0.1, type=float)
-parser.add_argument('--mlm', default=True, type=bool)
+parser.add_argument('--mlm', action='store_true')
 
 
 #超参数
