@@ -78,6 +78,7 @@ def train(model, tokenizer, checkpoint, round):
     logger.info("  Model_type = %s", args.model_type)
     logger.info("  Decoder_type = %s", args.decoder_type)
     logger.info("  MLM task = %s", str(args.mlm))
+    logger.info("  MLM weight = %s", str(args.mlm_weight))
 
 
     # 没有历史断点，则从0开始
