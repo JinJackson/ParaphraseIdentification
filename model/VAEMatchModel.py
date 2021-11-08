@@ -184,7 +184,7 @@ class VaeBertMatchModel(BertPreTrainedModel):
             if masked_lm_loss is None:
                 loss = loss_cvae_task
             else:
-                loss = loss_cvae_task + masked_lm_loss
+                loss = loss_cvae_task + args.mlm_weight * masked_lm_loss
             #print(task_loss, recons_loss + KLD_loss, masked_lm_loss)
             return loss, logits
         else:
