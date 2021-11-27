@@ -2,11 +2,15 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 from utils.classification_metrics import accuracy, f1_score
 from tqdm import tqdm
+import torch
 
 key_dict = {'事物': 'what', '人物': 'who', '做法': 'how', '选择': 'which', '时间': 'when', '地点': 'where', '原因': 'why',
             '其他': 'others', '未知': 'UNK'}
 q_type = ['事物', '人物', '做法', '选择', '时间', '地点', '原因',
           '其他', '未知']
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+print(device)
 
 
 def read_data_5lines(data_file):
@@ -105,6 +109,9 @@ def test_for_dataset(dataset, model):
     loss = []
     for batch in tqdm(data_loader, desc='testing'):
         input_ids, token_type_ids, attention_mask, labels, query1, query2 = batch
+        batch = [t.to(device) for t in batch[:-2]]
+        input_ids, token_type_ids, attention_mask, labels = batch
+
         outputs = model(input_ids=input_ids.long(),
                         token_type_ids=token_type_ids.long(),
                         attention_mask=attention_mask.long(),
@@ -117,12 +124,12 @@ def test_for_dataset(dataset, model):
 
         loss.append(eval_loss.item())
 
-    if all_labels is None:
-        all_labels = labels.detach().cpu().numpy()
-        all_logits = logits.detach().cpu().numpy()
-    else:
-        all_labels = np.concatenate((all_labels, labels.detach().cpu().numpy()), axis=0)
-        all_logits = np.concatenate((all_logits, logits.detach().cpu().numpy()), axis=0)
+        if all_labels is None:
+            all_labels = labels.detach().cpu().numpy()
+            all_logits = logits.detach().cpu().numpy()
+        else:
+            all_labels = np.concatenate((all_labels, labels.detach().cpu().numpy()), axis=0)
+            all_logits = np.concatenate((all_logits, logits.detach().cpu().numpy()), axis=0)
 
     acc = accuracy(all_logits, all_labels)
     f1 = f1_score(all_logits, all_labels)
@@ -134,8 +141,8 @@ if __name__ == "__main__":
     from transformers import BertTokenizer
     from model.VAEMatchModel import VaeBertMatchModel
 
-    tokenzier = BertTokenizer.from_pretrained('bert-base-chinese')
-    model = VaeBertMatchModel.from_pretrained('bert-base-chinese')
+    tokenzier = BertTokenizer.from_pretrained('bert-base-chinese').to(device)
+    model = VaeBertMatchModel.from_pretrained('bert-base-chinese').to(device)
     all_dataset = load_all_datasets(model=model, 
                                     tokenizer=tokenzier, 
                                     test_type='vae')
