@@ -1,0 +1,250 @@
+﻿How do you see my quota || ‍Amount||1
+How to increase the loan amount ||, ask how to increase the amount||1
+Why did the comprehensive score fail || The comprehensive evaluation failed to pass||1
+What is the interest rate? || How much is the penalty interest? ||0
+Can't activate || Why can't I complete the ID number||0
+2500 When will it arrive || Arrival||0
+Is there any product preview for next week? || Are there any wealth management products next week||1
+I didn’t receive a call and didn’t call again || I didn’t receive a confirmation call||1
+To retire || I want to turn off the micro loan function||1
+Hello, why is it that the ID is wrong every time || The last digit of my ID is x, should I ask whether it is uppercase or lowercase||0
+Why does my WeChat login fail on the WeBank app || Why I always fail to bind my card. ||0
+How to apply for a micro loan? || Why is the difference between buying gold and your price different||0
+How to change the repayment bank card? || How to change the repayer and bank||1
+Can I apply for a micro loan || Is there a micro loan?|0
+How much is the interest of 10,000 yuan for 10 days || How much is the interest of 30,000 yuan for 10 days? ||1
+How to cancel the account || Can I close it? ||1
+Can be down in a few days || When will it be down||1
+View loan contract || Our contract||1
+Why I am selected but no quota || Why is there no quota after opening||1
+Change phone || How to change the reserved number||1
+I just answered the phone once, and then I didn’t call again || Why do I always call me when I have a meeting? I can’t answer it. Can you call me after the meeting now?|0
+Why do I say that I can’t get the loan after I repay the loan on time || Why I can’t borrow the money when I repay the loan on time? ||1
+What can borrowed money be used for? || When do I have this feature||0
+What to increase the quota || What to do if the quota is not enough||1
+I ask you how to turn off || how to turn off the function||1
+How to pay, where to pay || Repayment on the 10th, only on the 15th ||0
+How to change the repayment time || How to change the repayment from 10 installments to 20 installments ||1
+Hello, can you borrow money at night? Is there a time limit for loan repayment during the Spring Festival? || How many times can I borrow in a month||0
+Is this Guangdong Shenzhen number yours?| Is your number||1
+Is this WeChat loan on WeChat gone? || The entrance is gone||1
+When will I be able to borrow || When will I be able to borrow next time||0
+Where is the Qq wallet || Q Where is the Q wallet||1
+How often will the customer service call || How often will the call||1
+Unable to activate Micro Loan || Activation, borrowing, repayment, etc.||0
+The PBOC's credit investigation does not meet the approval requirements of WeBank || Why does it not meet the approval requirements of WeBank ||0
+I said when can I get a loan || When can I get my loan||0
+How long does it usually take to call || When will the application be called at 23:45||1
+When will the loan arrive?|| Usually it takes a long time to arrive? ||1
+How much to pay next month || How much to pay in a month||1
+Can you invite me to participate || When can I apply again||0
+Why can't I borrow money after I pay it off? || I would like to ask, I have repaid the loan, can I still borrow it||1
+Why don’t I have a micro loan window || I don’t have this option in my wallet||1
+'Borrowing failure' understand || Why did I fail to borrow money, and what reason||1
+When can I use microcredit || When can I borrow money||1
+It’s that I have not come down when I applied for the particle generation || Why can’t it be done||1
+Hello, cancel the loan || Please cancel the 2500 loan that I applied for in the morning, my colleague was joking. Thank you||1
+When will you call next time || When will you call to confirm? ||1
+Hello, how can I repay the monthly payment|| 1000 yuan in 5 installments, how much do I have to pay back in a month? ||1
+Haven't received a review call yet || Didn't receive a review just now
+What is the interest rate for 20 months || How much handling fee will be deducted after receipt||0
+Hello, what procedures do I have to go through to enter the microfinance loan || help me open the microfinance loan||0
+Verification code acquisition || After clicking the verification code directly||0
+Bills paid || October 2016 bills||1
+What should I do if the bound bank card is lost || What should I do if the bound bank card is missing||1
+Why can't I use Weilidai || Why not Weilidai||1
+Is it possible to repay the loan in advance again || Hello, I would like to ask, I have successfully repaid the loan in advance, why can’t I continue to borrow||0
+Why can't I open an account || Can't open an account? ||1
+Check when the account will arrive || The money borrowed is in place for a long time||1
+How long will the credit limit be increased || How long will the credit limit be increased||1
+You can borrow for a few days and repay the loan || The loan can be paid in instalments, and it will be repaid in about a week.
+After opening an account and inputting the information, the next step can’t be clicked || WeBank account opening and binding card (post card) failed ||0
+What's wrong with the old failure of SMS verification code || Enter the verification code, it shows that the verification failed||1
+The bank card I received is useless, can I change the card? | The card number change is unsuccessful ||0
+Why did it fail || Why did my QQ Micro Loan loan fail the review? ||1
+What is the meaning of not meeting the borrowing requirements || What is the problem of not meeting the approval requirements and not being able to borrow money||1
+Opening hours for the next loan || Dear, can you open it for me as soon as possible||0
+How much is the interest income of one thousand yuan a month? I mean the current one. || Borrowing interest||0
+After application. How long will it take to call to confirm? || How long will the customer service call us||1
+How to apply for early repayment || If repayment in advance, how long can I borrow again||0
+I’m not an invited guest, how can I apply for activation || Why can’t I activate the microloan? ||0
+What will happen if the payment is not repaid on time || What will happen if not ||0
+I can’t log in, what should I do || Can’t log in! What's going on, can you explain it? ||1
+Why is there no automatic repayment on the 14th || I have always had sufficient balance, but the payment has not been deducted||1
+It is said that the number of ID input is too many and it is impossible to borrow || Is this supplementary ID input the last four digits||0
+, There are particles in the horse time... || I didn't receive it twice ||0
+Hello today, the deduction was unsuccessful, what should I do || Hello! I will repay tomorrow, but the money has not been deposited. If the deduction is not successful tomorrow morning, what time is the second deduction||0
+After paying off the debt in advance, how long can I apply for a loan again? || Where and how do I proceed with the early repayment? ||0
+Generally, the automatic repayment time is what time in the morning || What time is the deduction on the 14th||1
+What does it mean to fail to meet the approval of WeBank || What does it mean to fail to pass the approval||1
+The pro has not yet arrived in the account || The 15th salary arrives in the account to be able to make up ||0
+How to cancel a loan application || How to cancel a loan||1
+When can I get an invitation || I don’t know when it will open||0
+When will the next batch of people open || QQ has Wei Li generation||0
+Change the binding card || If you don't want to use it, just unbind the bank card ||0
+Sorry, I missed the review call || I didn't receive it just now||1
+Why do borrowing always fail? || Failed to borrow money, phone misrule||1
+I haven't received a return visit || I've been waiting for you for a long, long time for Particles||0
+How much interest does 1000 yuan cost? || Does 15-day repayment count as 15-day interest? ||1
+Send me the bill for September. || Current bill amount||1
+I want to change the bank card to the first one before || Lost the borrowing card||1
+The borrowing also monitors the use of funds? || Use of funds||1
+Why does the mobile phone dynamic code appear after filling in the payment password all the time || Why the verification code and input password keep jumping ||1
+Hello, if I pay off the loan, how can I ask you to issue a certificate || Print a settlement certificate||1
+10 years of QQ does not have a micro loan window || Why I don’t have a loan function||0
+How many installments to borrow money || Can it be divided into 36 installments||1
+1: Know the repayment date || I borrowed 4000 yesterday, can I pay 2000 first today||0
+Why haven't it arrived in three minutes || When will there be a particle generation||0
+To meet the approval requirements of WeBank || How to approve||0
+I need to issue a settlement certificate || The microparticle loan I applied for in November last year has been paid off. Can you issue a settlement certificate to me? Otherwise, I have a problem with the loan to buy a house. ||0
+How to authenticate || Identity authentication||1
+He said that I did not meet the approval requirements of WeBank || Show me that I did not meet the approval requirements of WeBank||1
+How to reduce the amount of borrowing || Is it okay to reduce the amount||0
+The repayment was unsuccessful today || Are you there? I have money in my card. How did the repayment fail||0
+How long have I been waiting? || Hello, do I need to phone to confirm my loan||0
+Failed to pass bank approval requirements || Why not approved||1
+How to raise the amount || How to borrow money, choose the amount and number of periods, only preview the repayment amount of each period, but there is no next step, can not borrow? ||0
+How long is the general repayment date || When is the repayment date for borrowing today||1
+May I ask the customer service phone number || What is the total customer service number to call now||1
+The original Agricultural Bank card was accidentally broken, can it be re-bind
+How to calculate the interest money paid off in one lump sum? || Can't I pay it back one month in advance||1
+Change the binding bank card || The new card has been bound, will the deduction be deducted from the new card? ||0
+How much is the grain rate || How much is the penalty rate||0
+Where is the time deposit in the APP || How to withdraw the time deposit in advance||0
+Can I change the repayment date? || Can I change the repayment date||1
+May I ask how Mozidai invited me || How to make Mozidai invite me||1
+Can I check my account and password if I forgot it || Forgot my password||1
+I applied at about 1:00 in the afternoon. How long will it take to confirm by phone || I applied through QQ in the morning, but I didn’t answer the phone in the afternoon. When will I call again?
+Does cancelling borrowing by oneself affect credit? || Ask me about my borrowing yesterday. When I confirmed by phone, I cancelled the loan. Can I still borrow again? ||0
+Pay off in advance || We can't borrow the loan in advance ||0
+0.05, pay every day || Why don't you go to bed||0
+When can I use Microcredit || When can I increase the loan limit? ||0
+I don’t have Bank of Communications at all. ||1
+3. Is it okay to borrow 20,000 to repay part of it in advance || Can a 40,000 loan be repaid in advance of 20,000? ||1
+Can I borrow again on the same day after repayment in full? || Why I failed to repay the loan, I can only do it today, ||0
+Cancellation of loan application || Why is the loan cancelled||0
+Cannot find Tenpay || Where is Tenpay? I didn't find it||1
+Estimated how long it will take || No one is calling ||0
+I want to change the repayment card number How to change || How to change the card repayment||1
+When is the interest paid? || After the loan is successful, the interest will be calculated from Duohui||1
+When can I use the loan business? || How many times can I borrow a month||0
+Stop borrowing, stop making verification calls. || Sorry, I cancel the loan||1
+Is the loan directly to the bank card or to the change || What bank can repay the loan||0
+Open Micro Loan || Open Micro Loan||1
+Why is there no deduction after the 12th? || 'I want to ask, when is the money deducted||0
+Does the interest of 16000 per day cost 80 yuan || How to calculate the daily profit of 1000 yuan||1
+For example, if you borrow 3000 yuan, is the daily interest 1.5 yuan?|| How much is the daily interest 0.05 for the 8000 limit? ||1
+Is it okay to pay off all at once? || You can directly deduct the money from my card that month. Can you continue to deduct the money after paying it off? ||0
+How to consume || I want to ask if I can get another loan under WeChat flow||0
+Just fill in the last 4 IDs and can’t enter it || Wechat how to bind the ID number||0
+I want to close || How do I close Micro Loan? ||1
+Are QQ and WeChat a bank loan port || Why is there a micro loan icon on WeChat, and why is it not displayed on QQ? ||1
+Hello, can this money be withdrawn? || Can the borrowed money be cashed||1
+I want to re-bind the bank card || Someone else's card that was previously bound to my QQ||0
+I have a friend who wants to use it, but I don’t know how to handle it. His phone is always an interface. || How to change the reserved phone number||0
+Why do I have to enter the verification code and payment password many times, but it still doesn’t work || Why does it say that I am an illegal loan after entering the payment password in the last step||0
+Borrow money, need money || Hello, I need money||1
+Can I turn it off after it is activated? || Wrong point, no need to borrow money, how to close it||1
+What does it mean to meet the approval requirements || Why did my comprehensive assessment fail? ||1
+Open || Open granular loan||1
+Reply to you Will you really get more menus? || Get more menus||1
+What can I do if I can’t log in || I'm in Canada, why can't I log in at all times||1
+How often will the amount be raised || How often will the amount be raised||1
+The loan reminder is waiting for phone confirmation, why not? || The loan is successful, there is no phone notification||1
+Why can't we log in with WeChat bank account when I log in? || Suddenly unable to log in||1
+No deduction at 17:00 || Why didn't I automatically repay on the 9th||1
+Why did my application for microparticle loan fail || Hello, my loan failed, what is the reason? ||1
+Why can’t I log in to my account sometimes || 2Can’t log in||1
+Can WeChat Loan be re-opened || How to re-enable it after turning off WeChat Loan||1
+Why can't I borrow my loan|| but the loan was not successful||1
+Can I change the repayment with another bank card || I have tied another bank card, then you will be able to deduct the repayment from the other card, right? ||0
+Why can't I use the column || Why can't I use the micro loan||1
+Why don’t others have this software || Where to see the WeChat icon||0
+APP download address || The download is complete, can’t log in||0
+3What about the future phone review? || How come no one has given me verification from 10 am to now||1
+When I opened an account, the face recognition always failed. || I kept opening the account, but the face recognition was unsuccessful. I was short-sighted and I didn’t want to wear glasses and read the numbers. I couldn’t see clearly. I couldn’t open an account.||1
+It has passed 17 o'clock, and the payment has not been deducted yet || Why is there no automatic deduction when depositing money to the card||1
+Will late repayment by one day cause overdue || How to repay the overdue part before 12 pm the next day? ||0
+How to return the goods in advance || Should the interest be deducted if repaid in one lump sum||0
+Why can't I microfinance loan || How to borrow money||0
+I have repaid twice, when can I borrow? || How long can I borrow after the first repayment||1
+How to set up automatic repayment || Enable automatic repayment||1
+What is the minimum amount of a single loan || Dear me, for example, how much is a monthly payment of 10,000 yuan||0
+Why it says I cannot borrow money || 'Why not open||0
+Change your phone number || What to do if you change your phone number||1
+When can I borrow money from Microsports || When can I apply for a loan? ||1
+Why don’t I get a loan, there are a lot of WeChat bills || I can’t get more than 20,000 bills in WeChat a month||1
+Does 1,000 yuan have an interest of 5 yuan per day || If you borrow 20,000, repay within one month, how much is the interest? ||0
+Where to borrow || Where to borrow||1
+Never received a call || Never received a review call||1
+Qilu Wengu 21 days || Why hasn't the interest of Qilu Wengu 21 due on 1.7 days arrived? ||0
+What does it mean to be unable to borrow money without meeting the approval requirements || What does it mean to fail to meet the requirements for borrowing money||1
+The icon deducted on the micro loan disappeared || Why did my micro loan suddenly disappear||1
+What to do if the bank's reserved phone number has been changed || Change the borrowing phone number||1
+Can you continue to use it after paying off the payment? || Proof of settlement, please express it to me as soon as possible, urgently, thank you ||0
+My bank number has been changed. Why is the old number displayed on your bank? || My mobile phone number has been changed, and I need a verification code for borrowing. How could it be the previous mobile phone number||1
+The quota is 2500, how much is the daily interest? || How to check the loan amount||0
+I got a loan and did not receive a call || Did not receive a call||1
+Fake my Wechat consumption of 50,000 to 60,000 and I didn’t see it open me || When can I call me||0
+My bank card shows that one thousand can be borrowed. Why does it show that the loan is moved out as soon as it is opened. The micro loan is not up to the approval requirements || There is no micro loan at the bottom of my wallet bank card||0
+Why do I just need to enter the verification code for borrowing money || Why do I suddenly disappear after I enter the mobile phone verification code for borrowing money||1
+Help to open a microloan || Apply for a microloan||1
+?Can't find the micro loan in the wallet || Why can't I use this product||0
+Hello, I have money in WeChat, can't I deduct it in WeChat? || Hello, can we repay the loan? ||1
+How do you use this micro loan? || Weilidai Loan||1
+Why can't I pass || Why can I borrow 3500, and it now shows that the comprehensive assessment failed? ||0
+Why did the audit call come back for a long time || It keeps showing why the audit is in progress? ||1
+How to repay in advance? Thank you! || How can I return in advance||1
+Why can't I pay the money now || Why can't I pay the money now||1
+Hello, I put the repayment amount on WeChat, can you deduct the payment? || Hello, can’t I pay it back in the repayment change||1
+One month's consumption is so big that I can't open it || My monthly consumption is more than 10,000 yuan. Don't forget it. I use other platforms||1
+How to cancel the loan if the loan is sent || Can the loan be canceled if it has not been approved yet||1
+Just now you have something, you can call now || Can you call us again to confirm? ||1
+Activated but no quota || Is there no quota after activating||1
+When does the borrowed money begin to accrue interest || How many days from the day of borrowing does not count interest||0
+The previously bound bank card is no longer valid, what should I do? || Is it necessary to bind a debit card to borrow money||0
+I have a friend who wants to use it, but I don’t know how to handle it. His phone has always been an interface. || Why doesn’t Apple have a loan option||1
+Phone review time || Is there a time limit for phone review||1
+Consumption quota || Why is there no quota? Alipay gave me 10,000 credits last year||1
+How to withdraw the remaining money || Refund||1
+What are the approval requirements~ || How to approve micro-loans||0
+In general, who is the most qualified person || Qq also has it||0
+Can the repayment date be delayed for one or two days || Can the repayment date be delayed||1
+Borrowing conditions || Borrowing conditions are ||1
+How can I change my mobile phone number || How can I change my mobile phone number||1
+Repayment record || Want to check the repayment record||1
+Why not deduct money || Why not deduct money||1
+Why is there no Weilidai in QQ|| Send a message that I am qualified, click in and say I am not qualified. Really know how to play||0
+How to cancel || Don't borrow anymore ||0
+Want to close || No borrowing||0
+Unable to pass bank approval requirements || How to get approval||0
+I didn’t have my phone with me just now || Hello, I just went out and didn’t bring my phone with me ||1
+Why doesn’t the mobile phone have a particle generation || Why there is no icon after a month||1
+I also want to see the loan contract || I want to see the contract||1
+How to change the mobile phone number binding || How to change the phone number? ||1
+How long does it take to increase the quota|| How long does it take to increase the quota||1
+When can I borrow || Pay off in advance, can I borrow again the next day||0
+Why is there no quota for mine || Why can't I check my quota||0
+When can I get a loan successfully? || After the full repayment, the loan was refused again ||0
+Hello, I want to ask || Hello, I want to consult||1
+How long will you call to confirm || When will you call||0
+Why doesn’t my phone have it || There is no phone in it||1
+The borrowing conditions are || What are the requirements for borrowing||1
+What is the customer service phone number || When will the customer service phone call||0
+Can I borrow it all when I pay it off? || Want to pay off in advance||0
+How much is the daily interest of a 10,000 loan || Why is the interest on the money I deposited not included in the assets||0
+Real-name authentication || How to verify ID card authentication||1
+What bank does it support || Okay, my repayment date is 2nd, but my bank card can only be unlocked the day after tomorrow for some reason, what should I do? ||0
+Said that the customer service would contact me on Monday. Now Monday is almost over. Have you contacted me? || Why can't I receive the verification code||0
+Is the repayment on any day after the successful application is interest-free? || When is the interest calculated every day||0
+1I can't see Weiweidai || How to download the app? ||0
+To pass, the money is not in place || Has not arrived in the account||1
+How to increase the quota How to increase the quota || Strongly request the increase ||0
+Where can I get the coupon || How to get the coupon||1
+ID card authentication || I need to enter my ID card when calling, there is an English letter behind my ID card ||0
+First loan limit || When will the loan limit resume after borrowing||0
+How to increase the quota || 7500 quota, but I can't borrow a point||0
+Why the loan failed || Why the invited client failed to borrow ||0
+How long to call || When to call me again||1
+I went into the wallet and bank card, but there was no borrowing. || It says I can’t borrow money ||0
+When can I borrow money? || When can I borrow again ||0
