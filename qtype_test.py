@@ -141,7 +141,7 @@ if __name__ == "__main__":
     from transformers import BertTokenizer
     from model.VAEMatchModel import VaeBertMatchModel
 
-    tokenzier = BertTokenizer.from_pretrained('bert-base-chinese').to(device)
+    tokenzier = BertTokenizer.from_pretrained('bert-base-chinese')
     model = VaeBertMatchModel.from_pretrained('bert-base-chinese').to(device)
     all_dataset = load_all_datasets(model=model, 
                                     tokenizer=tokenzier, 
