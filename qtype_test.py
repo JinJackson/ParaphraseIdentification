@@ -3,6 +3,12 @@ import numpy as np
 from utils.classification_metrics import accuracy, f1_score
 from tqdm import tqdm
 import torch
+from parser_test import args_test as args
+from transformers import BertTokenizer
+from model.VAEMatchModel import VaeBertMatchModel
+from model.MatchModel import BertMatchModel
+import sys
+
 
 key_dict = {'事物': 'what', '人物': 'who', '做法': 'how', '选择': 'which', '时间': 'when', '地点': 'where', '原因': 'why',
             '其他': 'others', '未知': 'UNK'}
@@ -81,7 +87,7 @@ class norm_Dataset(Dataset):
         return len(self.datas)
 
 
-def load_all_datasets(model, tokenizer, test_type):
+def load_all_datasets(tokenizer, test_type):
     q_type = ['事物', '人物', '做法', '选择', '时间', '地点', '原因',
           '其他', '未知']
 
@@ -91,8 +97,10 @@ def load_all_datasets(model, tokenizer, test_type):
     max_length = 128
 
     all_dataset = dict()
-
+    dataset_docker = None
+    print('test_type', test_type)
     if test_type == 'vae':
+        
         dataset_docker = vae_Dataset
     for type in q_type:
         data_file = './data/LCQMC/split/' + key_dict[type] + '.txt'
@@ -102,8 +110,10 @@ def load_all_datasets(model, tokenizer, test_type):
     return all_dataset
     
 
-def test_for_dataset(dataset, model):
-    data_loader = DataLoader(dataset=dataset, batch_size=16, shuffle=True)
+def test_for_dataset(dataset, model, model_type):
+    data_loader = DataLoader(dataset=dataset, 
+                            batch_size=16, 
+                            shuffle=True)
     all_labels = None
     all_logits = None
     loss = []
@@ -112,15 +122,16 @@ def test_for_dataset(dataset, model):
         batch = [t.to(device) for t in batch[:-2]]
         input_ids, token_type_ids, attention_mask, labels = batch
 
-        outputs = model(input_ids=input_ids.long(),
-                        token_type_ids=token_type_ids.long(),
-                        attention_mask=attention_mask.long(),
-                        query1=query1,
-                        query2=query2,
-                        mask_rate=None,
-                        labels=labels)
+        if model_type == 'vae':
+            outputs = model(input_ids=input_ids.long(),
+                            token_type_ids=token_type_ids.long(),
+                            attention_mask=attention_mask.long(),
+                            query1=query1,
+                            query2=query2,
+                            mask_rate=None,
+                            labels=labels)
 
-        eval_loss, logits = outputs[:2]
+            eval_loss, logits = outputs[:2]
 
         loss.append(eval_loss.item())
 
@@ -135,21 +146,45 @@ def test_for_dataset(dataset, model):
     f1 = f1_score(all_logits, all_labels)
     return np.array(loss).mean(), acc, f1
 
-    
+
+def Test():
+    model_type = args.model_type
+    model_class = None
+    model_path = args.model_path
+    test_set = args.test_set
+
+    if model_type == 'vae':
+        model_class = VaeBertMatchModel
+    elif model_type == 'baseline':
+        model_class = BertMatchModel
+    else:
+        print('please choose model_type from:1.baseline 2.vae 3.multi-task')
+        sys.exit(0)
+        
+    tokenzier = BertTokenizer.from_pretrained(model_path)
+    model = model_class.from_pretrained(model_path).to(device)
+    all_dataset = load_all_datasets(tokenizer=tokenzier, 
+                                    test_type=model_type)
+    if test_set == 'all':
+        for key in all_dataset:
+            # print(key) 
+            key_dataset = all_dataset[key]
+
+            loss, acc, f1 = test_for_dataset(dataset=key_dataset,
+                                            model=model,
+                                            model_type=model_type)
+            print("dataset_%s, acc:%.2f, f1:%.2f, loss:%.2f." % (key, acc, f1, loss))
+    elif test_set not in all_dataset.keys():
+        print('test_set type not exit')
+        sys.exit(0)
+    else:
+        for key in all_dataset:
+            if key == test_set:
+                key_dataset = all_dataset[key]
+
+                loss, acc, f1 = test_for_dataset(dataset=key_dataset,
+                                            model=model)
+                print(key, loss, acc, f1)
+                break
 if __name__ == "__main__":
-    model = None
-    from transformers import BertTokenizer
-    from model.VAEMatchModel import VaeBertMatchModel
-
-    tokenzier = BertTokenizer.from_pretrained('bert-base-chinese')
-    model = VaeBertMatchModel.from_pretrained('bert-base-chinese').to(device)
-    all_dataset = load_all_datasets(model=model, 
-                                    tokenizer=tokenzier, 
-                                    test_type='vae')
-    for key in all_dataset:
-        # print(key) 
-        key_dataset = all_dataset[key]
-
-        loss, acc, f1 = test_for_dataset(dataset=key_dataset,
-                                        model=model)
-        print(key, loss, acc, f1)
+    
