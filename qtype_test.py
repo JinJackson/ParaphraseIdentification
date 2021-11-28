@@ -153,6 +153,7 @@ def Test():
     model_path = args.model_path
     test_set = args.test_set
 
+    # model_type to get Model class file
     if model_type == 'vae':
         model_class = VaeBertMatchModel
     elif model_type == 'baseline':
@@ -160,11 +161,14 @@ def Test():
     else:
         print('please choose model_type from:1.baseline 2.vae 3.multi-task')
         sys.exit(0)
-        
+    
+    # load model and tokenizer from args.model_path
     tokenzier = BertTokenizer.from_pretrained(model_path)
     model = model_class.from_pretrained(model_path).to(device)
     all_dataset = load_all_datasets(tokenizer=tokenzier, 
                                     test_type=model_type)
+    
+    # choose test sub set: "all" to test all sub set
     if test_set == 'all':
         for key in all_dataset:
             # print(key) 
@@ -175,7 +179,7 @@ def Test():
                                             model_type=model_type)
             print("dataset_%s, acc:%.2f, f1:%.2f, loss:%.2f." % (key, acc, f1, loss))
     elif test_set not in all_dataset.keys():
-        print('test_set type not exit')
+        print('test_set type not exists')
         sys.exit(0)
     else:
         for key in all_dataset:
