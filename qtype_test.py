@@ -139,6 +139,14 @@ def test_for_dataset(dataset, model, model_type):
                             labels=labels)
 
             eval_loss, logits = outputs[:2]
+        
+        elif model_type == 'baseline':
+            outputs = model(input_ids=input_ids.long(),
+                            token_type_ids=token_type_ids.long(),
+                            attention_mask=attention_mask.long(),
+                            labels=labels)
+                            
+            eval_loss, logits = outputs[:2]
 
         loss.append(eval_loss.item())
 
