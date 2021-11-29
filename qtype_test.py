@@ -145,7 +145,7 @@ def test_for_dataset(dataset, model, model_type):
                             token_type_ids=token_type_ids.long(),
                             attention_mask=attention_mask.long(),
                             labels=labels)
-                            
+
             eval_loss, logits = outputs[:2]
 
         loss.append(eval_loss.item())
@@ -205,5 +205,7 @@ def Test():
                                             model=model)
                 print(key, loss, acc, f1)
                 break
+
+            
 if __name__ == "__main__":
     Test()

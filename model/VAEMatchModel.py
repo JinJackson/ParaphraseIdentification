@@ -192,6 +192,52 @@ class VaeBertMatchModel(BertPreTrainedModel):
 
 
 
+# VAE MatchModel
+class VaeMultiTaskMatchModel(BertPreTrainedModel):
+    def __init__(self, config):
+        super(VaeMultiTaskMatchModel, self).__init__(config)
+        self.bert = BertModel(config)
+        # cvae返回(latent_z, output) output就是重构的x:[batch,seq,768]
+        # lantent_z = [batch, seq*hidden]
+        self.input_size = config.hidden_size
+        self.dropout = config.hidden_dropout_prob
+        self.num_layers = args.num_layers
+        self.decoder_type = args.decoder_type
+        self.vae_module = VaeModel(input_size=self.input_size,
+                                   num_layers=self.num_layers,
+                                   dropout=self.dropout,
+                                   decoder_type=self.decoder_type)
+        self.linear_main = nn.Linear(self.input_size, 1)
+        # self.linear_vice1 = nn.Linear(self.input_size)
+        self.reconstruction_loss_func = nn.MSELoss()
+        self.task_loss_func = nn.BCEWithLogitsLoss()
+
+    def forward(self, input_ids, token_type_ids, attention_mask, labels_main=None, labels_vice=None):
+
+        outputs = self.bert(input_ids=input_ids,
+                            token_type_ids=token_type_ids,
+                            attention_mask=attention_mask)
+
+        last_hidden_state = outputs[0]
+
+        mean, logvar, latent_z, recons_x, encoder_outputs = self.vae_module(representation=last_hidden_state)
+        cls = encoder_outputs[:, 0, :]
+        logits = self.linear(cls)
+
+        if labels is not None:
+            task_loss = self.task_loss_func(logits, labels.float())
+            recons_loss = self.reconstruction_loss_func(recons_x, last_hidden_state)
+            KLD_loss = -0.5 * torch.sum(1 + logvar - mean.pow(2) - logvar.exp())
+            loss_cvae_task = args.task_weight * task_loss + (1 - args.task_weight) * (recons_loss + KLD_loss)
+
+            if masked_lm_loss is None:
+                loss = loss_cvae_task
+            else:
+                loss = loss_cvae_task + args.mlm_weight * masked_lm_loss
+            #print(task_loss, recons_loss + KLD_loss, masked_lm_loss)
+            return loss, logits
+        else:
+            return logits
 
 
 
