@@ -99,9 +99,16 @@ def load_all_datasets(tokenizer, test_type):
     all_dataset = dict()
     dataset_docker = None
     print('test_type', test_type)
+
+    all_test_type = ['vae', 'baseline']
     if test_type == 'vae':
-        
         dataset_docker = vae_Dataset
+    elif test_type == 'baseline':
+        dataset_docker = norm_Dataset
+    elif test_type not in test_type:
+        print('test_type illegal')
+        sys.exit(0)
+
     for type in q_type:
         data_file = './data/LCQMC/split/' + key_dict[type] + '.txt'
         all_dataset[type] = dataset_docker(data_file=data_file,
