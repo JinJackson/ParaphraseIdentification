@@ -10,7 +10,7 @@ import torch
 import numpy as np
 from tqdm import tqdm
 
-from all_dataset import TrainData
+from all_dataset import Multi_task_dataset
 from utils.logger import getLogger
 from utils.classification_metrics import accuracy, f1_score
 
@@ -41,10 +41,10 @@ def train(model, tokenizer, checkpoint, round):
     else:
         amp = None
 
-    train_data = TrainData(data_file=args.train_file,
-                           max_length=args.max_length,
-                           tokenizer=tokenizer,
-                           model_type=args.model_type)
+    train_data = Multi_task_dataset(data_file=args.train_file,
+                                    max_length=args.max_length,
+                                    tokenizer=tokenizer,
+                                    model_type=args.model_type)
 
     train_dataloader = DataLoader(dataset=train_data,
                                   batch_size=args.batch_size,
@@ -188,10 +188,10 @@ def train(model, tokenizer, checkpoint, round):
 
 def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
     print(type(model))
-    test_data = TrainData(data_file=test_file,
-                          max_length=args.max_length,
-                          tokenizer=tokenizer,
-                          model_type=args.model_type)
+    test_data = Multi_task_dataset(data_file=test_file,
+                                    max_length=args.max_length,
+                                    tokenizer=tokenizer,
+                                    model_type=args.model_type)
 
     test_dataLoader = DataLoader(dataset=test_data,
                                  batch_size=args.batch_size,
