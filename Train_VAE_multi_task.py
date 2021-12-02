@@ -2,7 +2,7 @@ from parser1 import args
 from torch.utils.data import DataLoader
 from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup, RobertaTokenizer, AlbertTokenizer, AutoTokenizer
 from model.MatchModel import BertMatchModel, RobertaMatchModel, AlbertMatchModel
-from model.VAEMatchModel import VaeBertMatchModel
+from model.VAEMatchModel import VaeMultiTaskMatchModel
 import os, random
 import glob
 import torch
@@ -77,8 +77,6 @@ def train(model, tokenizer, checkpoint, round):
     logger.info("  warmup steps = %d", warmup_steps)
     logger.info("  Model_type = %s", args.model_type)
     logger.info("  Decoder_type = %s", args.decoder_type)
-    logger.info("  MLM task = %s", str(args.mlm))
-    logger.info("  MLM weight = %s", str(args.mlm_weight))
 
 
     # 没有历史断点，则从0开始
@@ -101,24 +99,15 @@ def train(model, tokenizer, checkpoint, round):
         for batch in tqdm(train_dataloader, desc="Iteration", ncols=50):
             model.zero_grad()
             # 设置tensor gpu运行
-            query1, query2 = batch[-2:]
-            batch = tuple(t.to(args.device) for t in batch[:-2])
+            batch = tuple(t.to(args.device) for t in batch)
 
-            if 'roberta' in args.model_type:
-                input_ids, attention_mask, labels = batch
-                outputs = model(input_ids=input_ids.long(),
-                                attention_mask=attention_mask.long(),
-                                labels=labels)
-
-            else:
-                input_ids, token_type_ids, attention_mask, labels = batch
-                outputs = model(input_ids=input_ids.long(),
-                                token_type_ids=token_type_ids.long(),
-                                attention_mask=attention_mask.long(),
-                                query1=query1,
-                                query2=query2,
-                                mask_rate=args.mask_rate,
-                                labels=labels)
+            input_ids, token_type_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
+            outputs = model(input_ids=input_ids.long(),
+                            token_type_ids=token_type_ids.long(),
+                            attention_mask=attention_mask.long(),
+                            labels_main=labels_main,
+                            labels_vice1=labels_vice1,
+                            labels_vice2=labels_vice2)
 
             loss = outputs[0]
 
@@ -221,33 +210,26 @@ def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
 
     for batch in tqdm(test_dataLoader, desc="Evaluating", ncols=50):
         with torch.no_grad():
-            query1, query2 = batch[-2:]
-            batch = [t.to(args.device) for t in batch[:-2]]
-            if 'roberta' in args.model_type:
-                input_ids, attention_mask, labels = batch
-                outputs = model(input_ids=input_ids.long(),
-                                attention_mask=attention_mask.long(),
-                                labels=labels)
 
-            else:
-                input_ids, token_type_ids, attention_mask, labels = batch
-                outputs = model(input_ids=input_ids.long(),
-                                token_type_ids=token_type_ids.long(),
-                                attention_mask=attention_mask.long(),
-                                query1=query1,
-                                query2=query2,
-                                mask_rate=None,
-                                labels=labels)
+            batch = [t.to(args.device) for t in batch]
+
+            input_ids, token_type_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
+            outputs = model(input_ids=input_ids.long(),
+                            token_type_ids=token_type_ids.long(),
+                            attention_mask=attention_mask.long(),
+                            labels_main=labels_main,
+                            labels_vice1=labels_vice1,
+                            labels_vice2=labels_vice2)
 
             eval_loss, logits = outputs[:2]
 
             loss.append(eval_loss.item())
 
             if all_labels is None:
-                all_labels = labels.detach().cpu().numpy()
+                all_labels = labels_main.detach().cpu().numpy()
                 all_logits = logits.detach().cpu().numpy()
             else:
-                all_labels = np.concatenate((all_labels, labels.detach().cpu().numpy()), axis=0)
+                all_labels = np.concatenate((all_labels, labels_main.detach().cpu().numpy()), axis=0)
                 all_logits = np.concatenate((all_logits, logits.detach().cpu().numpy()), axis=0)
 
     acc = accuracy(all_logits, all_labels)
@@ -270,11 +252,11 @@ if __name__ == "__main__":
         MatchModel = AlbertMatchModel
         Tokenizer = AlbertTokenizer
     elif 'bert' in args.model_type:
-        MatchModel = VaeBertMatchModel
+        MatchModel = VaeMultiTaskMatchModel
         Tokenizer = BertTokenizer
-    elif 'ernie' in args.model_type:
-        MatchModel = VaeBertMatchModel
-        Tokenizer = AutoTokenizer
+    # elif 'ernie' in args.model_type:
+    #     MatchModel = VaeBertMatchModel
+    #     Tokenizer = AutoTokenizer
 
     if args.do_train:
         # train： 接着未训练完checkpoint继续训练
