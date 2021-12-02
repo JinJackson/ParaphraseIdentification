@@ -43,8 +43,7 @@ def train(model, tokenizer, checkpoint, round):
 
     train_data = Multi_task_dataset(data_file=args.train_file,
                                     max_length=args.max_length,
-                                    tokenizer=tokenizer,
-                                    model_type=args.model_type)
+                                    tokenizer=tokenizer)
 
     train_dataloader = DataLoader(dataset=train_data,
                                   batch_size=args.batch_size,
@@ -190,8 +189,7 @@ def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
     print(type(model))
     test_data = Multi_task_dataset(data_file=test_file,
                                     max_length=args.max_length,
-                                    tokenizer=tokenizer,
-                                    model_type=args.model_type)
+                                    tokenizer=tokenizer)
 
     test_dataLoader = DataLoader(dataset=test_data,
                                  batch_size=args.batch_size,
