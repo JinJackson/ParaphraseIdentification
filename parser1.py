@@ -21,7 +21,8 @@ parser.add_argument('--do_lower_case', default=True)
 # TODO  常改参数
 #模型参数
 parser.add_argument('--num_layers', default=2, type=int)
-parser.add_argument('--task_weight', default=0.9, type=float)
+parser.add_argument('--task_weight', default=0.9, type=float) # vae weight = 1 - task_weight
+parser.add_argument('--vice_weight', default=0.1, type=float) # independent, loss = main_loss + vice_weight * vice_loss
 parser.add_argument('--mlm_weight', default=0.1, type=float)
 parser.add_argument('--decoder_type', default='gru', type=str)
 parser.add_argument('--mask_rate', default=0.1, type=float)

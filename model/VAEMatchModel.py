@@ -1,3 +1,4 @@
+from logging import log
 import torch
 import torch.nn as nn
 from transformers import BertModel, RobertaModel, AlbertModel
@@ -192,7 +193,7 @@ class VaeBertMatchModel(BertPreTrainedModel):
 
 
 
-# VAE MatchModel
+# VAE + Multi-task MatchModel
 class VaeMultiTaskMatchModel(BertPreTrainedModel):
     def __init__(self, config):
         super(VaeMultiTaskMatchModel, self).__init__(config)
@@ -207,12 +208,17 @@ class VaeMultiTaskMatchModel(BertPreTrainedModel):
                                    num_layers=self.num_layers,
                                    dropout=self.dropout,
                                    decoder_type=self.decoder_type)
+        # 主任务linear
         self.linear_main = nn.Linear(self.input_size, 1)
-        # self.linear_vice1 = nn.Linear(self.input_size)
+        # 辅任务linear
+        self.linear_vice1 = nn.Linear(self.input_size, 9)
+        self.linear_vice2 = nn.Linear(self.input_size, 9)
+
         self.reconstruction_loss_func = nn.MSELoss()
         self.task_loss_func = nn.BCEWithLogitsLoss()
+        self.vice_loss_func = nn.CrossEntropyLoss()
 
-    def forward(self, input_ids, token_type_ids, attention_mask, labels_main=None, labels_vice=None):
+    def forward(self, input_ids, token_type_ids, attention_mask, labels_main=None, labels_vice1=None, labels_vice2=None):
 
         outputs = self.bert(input_ids=input_ids,
                             token_type_ids=token_type_ids,
@@ -222,18 +228,30 @@ class VaeMultiTaskMatchModel(BertPreTrainedModel):
 
         mean, logvar, latent_z, recons_x, encoder_outputs = self.vae_module(representation=last_hidden_state)
         cls = encoder_outputs[:, 0, :]
-        logits = self.linear(cls)
 
-        if labels is not None:
-            task_loss = self.task_loss_func(logits, labels.float())
+        logits = self.linear_main(cls)
+        sent1_logits = self.linear_vice1(cls)
+        sent2_logits = self.linear_vice2(cls)
+
+        # print(sent1_logits.shape, sent1_logits) # [bs, cls_num]
+        # print(sent2_logits.shape, sent2_logits) # [bs, cls_num]
+
+        if (labels_main is not None) and (labels_vice1 is not None) and (labels_vice2 is not None):
+            # print(type(labels_vice1))
+            labels_vice1 = labels_vice1.squeeze() # [bs, ]
+            labels_vice2 = labels_vice2.squeeze() # [bs, ]
+
+            task_loss = self.task_loss_func(logits, labels_main.float())
+            
+            vice_loss1 = self.vice_loss_func(sent1_logits, labels_vice1)
+            vice_loss2 = self.vice_loss_func(sent2_logits, labels_vice2)
+            vice_loss = vice_loss1 + vice_loss2
+
             recons_loss = self.reconstruction_loss_func(recons_x, last_hidden_state)
             KLD_loss = -0.5 * torch.sum(1 + logvar - mean.pow(2) - logvar.exp())
             loss_cvae_task = args.task_weight * task_loss + (1 - args.task_weight) * (recons_loss + KLD_loss)
+            loss = loss_cvae_task + args.vice_weight * vice_loss
 
-            if masked_lm_loss is None:
-                loss = loss_cvae_task
-            else:
-                loss = loss_cvae_task + args.mlm_weight * masked_lm_loss
             #print(task_loss, recons_loss + KLD_loss, masked_lm_loss)
             return loss, logits
         else:
