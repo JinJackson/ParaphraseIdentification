@@ -76,6 +76,7 @@ def train(model, tokenizer, checkpoint, round):
     logger.info("  warmup steps = %d", warmup_steps)
     logger.info("  Model_type = %s", args.model_type)
     logger.info("  Decoder_type = %s", args.decoder_type)
+    logger.info("  vice_loss_weight = %s", str(args.vice_weight))
 
 
     # 没有历史断点，则从0开始
