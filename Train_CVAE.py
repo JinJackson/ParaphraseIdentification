@@ -136,7 +136,7 @@ def train(model, tokenizer, checkpoint, round):
             if step % 500 == 0:
                 logger.debug("loss:"+str(np.array(epoch_loss).mean()))
                 logger.debug('learning_rate:' + str(optimizer.state_dict()['param_groups'][0]['lr']))
-            if step % 1000 == 0:
+            if step % args.saving_steps == 0:
                 round += 1
                 dev_loss, dev_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.dev_file,
                                                  checkpoint=epoch, round=round)
