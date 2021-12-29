@@ -37,6 +37,7 @@ parser.add_argument('--epochs', default=5, type=int)
 parser.add_argument('--batch_size', default=2, type=int)
 parser.add_argument('--max_length', default=128, type=int)
 parser.add_argument('--warmup_steps', default=0.1, type=float)
+parser.add_argument('--saving_steps', default=1000, type=int)
 
 parser.add_argument('--fp16', action='store_true')
 parser.add_argument('--fptype', default='O2')
