@@ -167,8 +167,8 @@ if __name__ == "__main__":
     tokenizer = BertTokenizer.from_pretrained(args2.save_dir)
 
 
-    dev_loss, dev_acc, dev_f1 = test(model, tokenizer, dev_file)
-    test_loss, test_acc, test_f1 = test(model, tokenizer, test_file)
+    dev_loss, dev_acc, dev_f1 = test(model, tokenizer, dev_file, args2.model_type)
+    test_loss, test_acc, test_f1 = test(model, tokenizer, test_file, args2.model_type)
 
     print('dev_loss:', dev_loss, ', dev_acc:', dev_acc, ', dev_f1:', dev_f1)
     print('test_loss:', test_loss, ', test_acc:', test_acc, ', test_f1:', test_f1)
