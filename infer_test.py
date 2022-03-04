@@ -87,17 +87,24 @@ if __name__ == "__main__":
     assert args2.test_file in ['LCQMC', 'BQ']
 
     model_class = None
+    dev_file = None
+    test_file = None
 
     if model_type == 'cvae':
         model_class = VaeBertMatchModel
+        dev_file = 'data/' + args2.test_file + '/tagging/dev_tag.txt'
+        test_file = 'data/' + args2.test_file + '/tagging/test_tag.txt'
     elif model_type == 'vae2task':
         model_class = VaeMultiTaskMatchModel
+        dev_file = 'data/' + args2.test_file + '/tagging/dev_tag.txt'
+        test_file = 'data/' + args2.test_file + '/tagging/test_tag.txt'
     elif model_type == 'baseline':
         model_class = BertMatchModel
+        dev_file = 'data/' + args2.test_file + '/clean/dev_clean.txt'
+        test_file = 'data/' + args2.test_file + '/clean/test_clean.txt'
     
 
-    dev_file = 'data/' + args2.test_file + '/clean/dev_clean.txt'
-    test_file = 'data/' + args2.test_file + '/clean/test_clean.txt'
+
     model = model_class.from_pretrained(args2.save_dir)
     tokenizer = BertTokenizer.from_pretrained(args2.save_dir)
 
