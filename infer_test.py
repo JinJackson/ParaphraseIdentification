@@ -111,12 +111,15 @@ def test(model, tokenizer, test_file, model_type):
     elif model_type == 'cvae':
         for batch in tqdm(test_dataLoader, desc="Evaluating", ncols=50):
             with torch.no_grad():
+                query1, query2 = batch[-2:]
                 batch = [t.to(args2.device) for t in batch[:-2]]
                 input_ids, token_type_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 token_type_ids=token_type_ids.long(),
                                 attention_mask=attention_mask.long(),
-                                labels=labels)
+                                labels=labels,
+                                query1=query1,
+                                query2=query2)
 
                 eval_loss, logits = outputs[:2]
 
