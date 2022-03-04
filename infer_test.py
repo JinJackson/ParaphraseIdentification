@@ -1,4 +1,4 @@
-from all_dataset import Multi_task_dataset
+from all_dataset import Multi_task_dataset, TrainData
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
@@ -34,14 +34,28 @@ def get_args():
     return args2
         
 
-def test(model, tokenizer, test_file):
-    test_data = Multi_task_dataset(data_file=test_file,
-                                    max_length=args2.max_length,
-                                    tokenizer=tokenizer)
+def test(model, tokenizer, test_file, model_type):
+    
+    test_data = None
+    test_dataLoader = None
 
-    test_dataLoader = DataLoader(dataset=test_data,
-                                 batch_size=args2.batch_size,
-                                 shuffle=False)
+    if model_type == 'baseline':
+        test_data = TrainData(data_file=test_file, max_length=args2.max_length, tokenizer=tokenizer)
+        test_dataLoader = DataLoader(test_data,
+                                    batch_size=args2.batch_size,
+                                    shuffle=False)
+    
+    elif model_type == 'vae2task':
+        test_data = Multi_task_dataset(data_file=test_file, max_length=args2.max_length, tokenizer=tokenizer)
+        test_dataLoader = DataLoader(dataset=test_data,
+                                    batch_size=args2.batch_size,
+                                    shuffle=False)
+    
+    elif model_type == 'cvae':
+        test_data = TrainData(data_file=test_file, max_length=args2.max_length, tokenizer=tokenizer)
+        test_dataLoader = DataLoader(test_data,
+                                    batch_size=args2.batch_size,
+                                    shuffle=False)
 
     loss = []
 
@@ -50,29 +64,73 @@ def test(model, tokenizer, test_file):
 
     model.eval()
 
-    for batch in tqdm(test_dataLoader, desc="Evaluating", ncols=50):
-        with torch.no_grad():
+    if model_type == "vae2task":
+        for batch in tqdm(test_dataLoader, desc="Evaluating", ncols=50):
+            with torch.no_grad():
 
-            batch = [t.to(args2.device) for t in batch]
+                batch = [t.to(args2.device) for t in batch]
 
-            input_ids, token_type_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
-            outputs = model(input_ids=input_ids.long(),
-                            token_type_ids=token_type_ids.long(),
-                            attention_mask=attention_mask.long(),
-                            labels_main=labels_main,
-                            labels_vice1=labels_vice1,
-                            labels_vice2=labels_vice2)
 
-            eval_loss, logits = outputs[:2]
+                input_ids, token_type_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
+                outputs = model(input_ids=input_ids.long(),
+                                token_type_ids=token_type_ids.long(),
+                                attention_mask=attention_mask.long(),
+                                labels_main=labels_main,
+                                labels_vice1=labels_vice1,
+                                labels_vice2=labels_vice2)
 
-            loss.append(eval_loss.item())
+                eval_loss, logits = outputs[:2]
 
-            if all_labels is None:
-                all_labels = labels_main.detach().cpu().numpy()
-                all_logits = logits.detach().cpu().numpy()
-            else:
-                all_labels = np.concatenate((all_labels, labels_main.detach().cpu().numpy()), axis=0)
-                all_logits = np.concatenate((all_logits, logits.detach().cpu().numpy()), axis=0)
+                loss.append(eval_loss.item())
+
+                if all_labels is None:
+                    all_labels = labels_main.detach().cpu().numpy()
+                    all_logits = logits.detach().cpu().numpy()
+                else:
+                    all_labels = np.concatenate((all_labels, labels_main.detach().cpu().numpy()), axis=0)
+                    all_logits = np.concatenate((all_logits, logits.detach().cpu().numpy()), axis=0)
+    
+    elif model_type == 'baseline':
+        for batch in tqdm(test_dataLoader, desc="Evaluating", ncols=50):
+            with torch.no_grad():
+                batch = [t.to(args2.device) for t in batch[:-2]]
+                input_ids, token_type_ids, attention_mask, labels = batch
+                outputs = model(input_ids=input_ids.long(),
+                                token_type_ids=token_type_ids.long(),
+                                attention_mask=attention_mask.long(),
+                                labels=labels)
+
+                eval_loss, logits = outputs[:2]
+
+                loss.append(eval_loss.item())
+
+                if all_labels is None:
+                    all_labels = labels.detach().cpu().numpy()
+                    all_logits = logits.detach().cpu().numpy()
+                else:
+                    all_labels = np.concatenate((all_labels, labels.detach().cpu().numpy()), axis=0)
+                    all_logits = np.concatenate((all_logits, logits.detach().cpu().numpy()), axis=0)
+
+    elif model_type == 'cvae':
+        for batch in tqdm(test_dataLoader, desc="Evaluating", ncols=50):
+            with torch.no_grad():
+                batch = [t.to(args2.device) for t in batch[:-2]]
+                input_ids, token_type_ids, attention_mask, labels = batch
+                outputs = model(input_ids=input_ids.long(),
+                                token_type_ids=token_type_ids.long(),
+                                attention_mask=attention_mask.long(),
+                                labels=labels)
+
+                eval_loss, logits = outputs[:2]
+
+                loss.append(eval_loss.item())
+
+                if all_labels is None:
+                    all_labels = labels.detach().cpu().numpy()
+                    all_logits = logits.detach().cpu().numpy()
+                else:
+                    all_labels = np.concatenate((all_labels, labels.detach().cpu().numpy()), axis=0)
+                    all_logits = np.concatenate((all_logits, logits.detach().cpu().numpy()), axis=0)
 
     acc = accuracy(all_logits, all_labels)
     f1 = f1_score(all_logits, all_labels)
