@@ -20,7 +20,7 @@ def get_args():
                         help="which model to initalize")
     # parser.add_argument("--model_path", default=None, type=str, required=True, 
     #                     help="ckpt for model to test")
-    parser.add_argument("--model_path", default="bert-base-uncased", type=str, required=True, 
+    parser.add_argument("--save_dir", default="bert-base-uncased", type=str, required=True, 
                         help="ckpt for model to test")
     parser.add_argument("--max_length", default=128, type=int, required=True, 
                         help="max_length to be padding or truncation")
