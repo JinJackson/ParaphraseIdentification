@@ -67,10 +67,7 @@ def test(model, tokenizer, test_file, model_type):
     if model_type == "vae2task":
         for batch in tqdm(test_dataLoader, desc="Evaluating", ncols=50):
             with torch.no_grad():
-
                 batch = [t.to(args2.device) for t in batch]
-
-
                 input_ids, token_type_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
                 outputs = model(input_ids=input_ids.long(),
                                 token_type_ids=token_type_ids.long(),

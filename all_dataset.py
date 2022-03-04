@@ -30,8 +30,6 @@ class TrainData(Dataset):
                                                     padding='max_length')
         input_ids  = np.array(tokenzied_dict['input_ids'])
         attention_mask = np.array(tokenzied_dict['attention_mask'])
-        if 'roberta' in self.model_type:
-            return input_ids, attention_mask, np.array([label])
         token_type_ids = np.array(tokenzied_dict['token_type_ids'])
         return input_ids, token_type_ids, attention_mask, np.array([label]), query1, query2
 
