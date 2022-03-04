@@ -63,6 +63,7 @@ def test(model, tokenizer, test_file, model_type):
     all_logits = None
 
     model.eval()
+    mdoel = model.to(args2.device)
 
     if model_type == "vae2task":
         for batch in tqdm(test_dataLoader, desc="Evaluating", ncols=50):
