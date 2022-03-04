@@ -22,9 +22,9 @@ def get_args():
     #                     help="ckpt for model to test")
     parser2.add_argument("--save_dir", default="bert-base-uncased", type=str, required=True, 
                         help="ckpt for model to test")
-    parser2.add_argument("--max_length", default=128, type=int, required=True, 
+    parser2.add_argument("--max_length", default=128, type=int, 
                         help="max_length to be padding or truncation")
-    parser2.add_argument("--batch_size", default=32, type=int, required=True, 
+    parser2.add_argument("--batch_size", default=32, type=int, 
                         help="batch size to test")
     args2 = parser2.parse_args()
 
