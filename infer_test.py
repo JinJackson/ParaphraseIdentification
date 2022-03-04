@@ -98,8 +98,8 @@ if __name__ == "__main__":
 
     dev_file = 'data/' + args.test_file + '/clean/dev_clean.txt'
     test_file = 'data/' + args.test_file + '/clean/test_clean.txt'
-    model = model_class.from_pretrained(args.model_path)
-    tokenizer = BertTokenizer.from_pretrained(args.model_path)
+    model = model_class.from_pretrained(args.save_dir)
+    tokenizer = BertTokenizer.from_pretrained(args.save_dir)
 
 
     dev_loss, dev_acc, dev_f1 = test(model, tokenizer, dev_file)
