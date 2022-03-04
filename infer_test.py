@@ -12,35 +12,35 @@ from transformers import BertTokenizer
 
 
 def get_args():
-    parser = argparse.ArgumentParser()
+    parser2 = argparse.ArgumentParser()
 
-    parser.add_argument("--test_file", default=None, type=str, required=True, 
+    parser2.add_argument("--test_file", default=None, type=str, required=True, 
                         help="test file path")
-    parser.add_argument("--model_type", default=None, type=str, required=True,
+    parser2.add_argument("--model_type", default=None, type=str, required=True,
                         help="which model to initalize")
     # parser.add_argument("--model_path", default=None, type=str, required=True, 
     #                     help="ckpt for model to test")
-    parser.add_argument("--save_dir", default="bert-base-uncased", type=str, required=True, 
+    parser2.add_argument("--save_dir", default="bert-base-uncased", type=str, required=True, 
                         help="ckpt for model to test")
-    parser.add_argument("--max_length", default=128, type=int, required=True, 
+    parser2.add_argument("--max_length", default=128, type=int, required=True, 
                         help="max_length to be padding or truncation")
-    parser.add_argument("--batch_size", default=32, type=int, required=True, 
+    parser2.add_argument("--batch_size", default=32, type=int, required=True, 
                         help="batch size to test")
-    args = parser.parse_args()
+    args2 = parser2.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    args.device = device
+    args2.device = device
 
-    return args
+    return args2
         
 
 def test(model, tokenizer, test_file):
     test_data = Multi_task_dataset(data_file=test_file,
-                                    max_length=args.max_length,
+                                    max_length=args2.max_length,
                                     tokenizer=tokenizer)
 
     test_dataLoader = DataLoader(dataset=test_data,
-                                 batch_size=args.batch_size,
+                                 batch_size=args2.batch_size,
                                  shuffle=False)
 
     loss = []
@@ -53,7 +53,7 @@ def test(model, tokenizer, test_file):
     for batch in tqdm(test_dataLoader, desc="Evaluating", ncols=50):
         with torch.no_grad():
 
-            batch = [t.to(args.device) for t in batch]
+            batch = [t.to(args2.device) for t in batch]
 
             input_ids, token_type_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
             outputs = model(input_ids=input_ids.long(),
@@ -80,11 +80,11 @@ def test(model, tokenizer, test_file):
 
 
 if __name__ == "__main__":
-    args = get_args()
-    model_type = args.model_type
+    args2 = get_args()
+    model_type = args2.model_type
 
     assert model_type in ['cvae', 'baseline', 'vae2task']
-    assert args.test_file in ['LCQMC', 'BQ']
+    assert args2.test_file in ['LCQMC', 'BQ']
 
     model_class = None
 
@@ -96,10 +96,10 @@ if __name__ == "__main__":
         model_class = BertMatchModel
     
 
-    dev_file = 'data/' + args.test_file + '/clean/dev_clean.txt'
-    test_file = 'data/' + args.test_file + '/clean/test_clean.txt'
-    model = model_class.from_pretrained(args.save_dir)
-    tokenizer = BertTokenizer.from_pretrained(args.save_dir)
+    dev_file = 'data/' + args2.test_file + '/clean/dev_clean.txt'
+    test_file = 'data/' + args2.test_file + '/clean/test_clean.txt'
+    model = model_class.from_pretrained(args2.save_dir)
+    tokenizer = BertTokenizer.from_pretrained(args2.save_dir)
 
 
     dev_loss, dev_acc, dev_f1 = test(model, tokenizer, dev_file)
