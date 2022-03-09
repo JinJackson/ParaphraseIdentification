@@ -3,11 +3,26 @@ import numpy as np
 from utils.classification_metrics import accuracy, f1_score
 from tqdm import tqdm
 import torch
-from parser_test import args_test as args
+
 from transformers import BertTokenizer
 from model.VAEMatchModel import VaeBertMatchModel
 from model.MatchModel import BertMatchModel
 import sys
+import argparse
+
+def get_args():
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--test_data', default='LCQMC')
+    parser.add_argument('--model_type', default='vae') #vae baseline multi-task
+    parser.add_argument('--model_path', default='bert-base-chinese')
+    parser.add_argument('--test_set', default='all')
+
+    args_test = parser.parse_args()
+    return args_test
+
+args = get_args()
 
 
 key_dict = {'事物': 'what', '人物': 'who', '做法': 'how', '选择': 'which', '时间': 'when', '地点': 'where', '原因': 'why',
@@ -105,7 +120,7 @@ def load_all_datasets(tokenizer, test_type):
         dataset_docker = vae_Dataset
     elif test_type == 'baseline':
         dataset_docker = norm_Dataset
-    elif test_type not in test_type:
+    elif test_type not in all_test_type:
         print('test_type illegal')
         sys.exit(0)
 
