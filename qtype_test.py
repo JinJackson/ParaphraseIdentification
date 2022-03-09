@@ -22,7 +22,7 @@ def get_args():
     args_test = parser.parse_args()
     return args_test
 
-args = get_args()
+args_test = get_args()
 
 
 key_dict = {'事物': 'what', '人物': 'who', '做法': 'how', '选择': 'which', '时间': 'when', '地点': 'where', '原因': 'why',
@@ -178,10 +178,10 @@ def test_for_dataset(dataset, model, model_type):
 
 
 def Test():
-    model_type = args.model_type
+    model_type = args_test.model_type
     model_class = None
-    model_path = args.model_path
-    test_set = args.test_set
+    model_path = args_test.model_path
+    test_set = args_test.test_set
 
     # model_type to get Model class file
     if model_type == 'vae':
