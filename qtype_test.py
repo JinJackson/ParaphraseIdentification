@@ -14,10 +14,10 @@ def get_args():
 
     parser_test = argparse.ArgumentParser()
 
-    parser_test.add_argument('--test_data', default='LCQMC')
-    parser_test.add_argument('--model_type', default='vae') #vae baseline multi-task
-    parser_test.add_argument('--save_dir', default='bert-base-chinese')
-    parser_test.add_argument('--test_set', default='all')
+    parser_test.add_argument('--test_data', default='LCQMC', type=str, required=True)
+    parser_test.add_argument('--model_type', default='vae', type=str, required=True) #vae baseline multi-task
+    parser_test.add_argument('--save_dir', default='bert-base-chinese', type=str, required=True)
+    parser_test.add_argument('--test_set', default='all', type=str, required=True)
 
     args_test = parser_test.parse_args()
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
