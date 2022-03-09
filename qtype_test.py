@@ -12,14 +12,14 @@ import argparse
 
 def get_args():
 
-    parser = argparse.ArgumentParser()
+    parser_test = argparse.ArgumentParser()
 
-    parser.add_argument('--test_data', default='LCQMC')
-    parser.add_argument('--model_type', default='vae') #vae baseline multi-task
-    parser.add_argument('--model_path', default='bert-base-chinese')
-    parser.add_argument('--test_set', default='all')
+    parser_test.add_argument('--test_data', default='LCQMC')
+    parser_test.add_argument('--model_type', default='vae') #vae baseline multi-task
+    parser_test.add_argument('--save_dir', default='bert-base-chinese')
+    parser_test.add_argument('--test_set', default='all')
 
-    args_test = parser.parse_args()
+    args_test = parser_test.parse_args()
     return args_test
 
 args_test = get_args()
@@ -180,7 +180,7 @@ def test_for_dataset(dataset, model, model_type):
 def Test():
     model_type = args_test.model_type
     model_class = None
-    model_path = args_test.model_path
+    model_path = args_test.save_dir
     test_set = args_test.test_set
 
     # model_type to get Model class file
