@@ -27,6 +27,7 @@ parser.add_argument('--mlm_weight', default=0.1, type=float)
 parser.add_argument('--decoder_type', default='gru', type=str)
 parser.add_argument('--mask_rate', default=0.1, type=float)
 parser.add_argument('--mlm', action='store_true')
+parser.add_argument('--test_set', default=None, type=str)  # for qtype test
 
 
 #超参数
