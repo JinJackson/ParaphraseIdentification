@@ -20,6 +20,8 @@ def get_args():
     parser_test.add_argument('--test_set', default='all')
 
     args_test = parser_test.parse_args()
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # args_test.device = device
     return args_test
 
 args_test = get_args()
