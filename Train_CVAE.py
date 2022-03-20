@@ -92,6 +92,9 @@ def train(model, tokenizer, checkpoint, round):
     max_test_acc = 0
     max_test_f1 = 0
 
+    max_dev_acc = 0
+    max_dev_f1 = 0
+
     logger.debug("  Start Batch = %d", checkpoint)
     for epoch in range(checkpoint, args.epochs):
         model.train()
@@ -150,9 +153,11 @@ def train(model, tokenizer, checkpoint, round):
                     '【TEST】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (
                     epoch, round, test_loss, test_acc, test_f1))
                 output_dir = args.save_dir + "/checkpoint-" + str(epoch) + '-' + str(round)
-                if test_acc > max_test_acc or test_f1 > max_test_f1:
+                if test_acc >= max_test_acc or test_f1 >= max_test_f1 or dev_acc >= max_dev_acc or dev_f1 >= max_dev_f1:
                     max_test_acc = max(test_acc, max_test_acc)
                     max_test_f1 = max(test_f1, max_test_f1)
+                    max_dev_acc = max(dev_acc, max_dev_acc)
+                    max_dev_f1 = max(dev_f1, max_dev_f1)
 
                     if not os.path.exists(output_dir):
                         os.makedirs(output_dir)
@@ -196,6 +201,7 @@ def train(model, tokenizer, checkpoint, round):
             max_test_acc = max(test_acc, max_test_acc)
             max_test_f1 = max(test_f1, max_test_f1)
     logger.info('【BEST TEST ACC】: %.4f,   【BEST TEST F1】: %.4f' % (max_test_acc, max_test_f1))
+    logger.info('【BEST DEV ACC】: %.4f,   【BEST DEV F1】: %.4f' % (max_dev_acc, max_dev_f1))
 
 def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
     print(type(model))
