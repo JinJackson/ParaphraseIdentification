@@ -82,6 +82,11 @@ def train(model, tokenizer, checkpoint):
     else:
         checkpoint += 1
 
+    max_dev_acc = 0
+    max_dev_f1 = 0
+    max_test_acc = 0
+    max_test_f1 = 0
+
     logger.debug("  Start Batch = %d", checkpoint)
     for epoch in range(checkpoint, args.epochs):
         model.train()
@@ -119,30 +124,38 @@ def train(model, tokenizer, checkpoint):
             optimizer.step()
             scheduler.step()
             step += 1
-            if step % 500 == 0:
-              logger.debug("loss:"+str(np.array(epoch_loss).mean()))
-              logger.debug('learning_rate:' + str(optimizer.state_dict()['param_groups'][0]['lr']))
-
-            # 保存模型
-        output_dir = args.save_dir + "/checkpoint-" + str(epoch)
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-        model_to_save = (model.module if hasattr(model, "module") else model)
-        model_to_save.save_pretrained(output_dir)
-        tokenizer.save_pretrained(output_dir)
-        torch.save(args, os.path.join(output_dir, "training_args.bin"))
-        logger.debug("Saving model checkpoint to %s", output_dir)
-        if args.fp16:
-            torch.save(amp.state_dict(), os.path.join(output_dir, "amp.pt"))
-        torch.save(optimizer.state_dict(), os.path.join(output_dir, "optimizer.pt"))
-        torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
-        logger.debug("Saving optimizer and scheduler states to %s", output_dir)
-
-        dev_loss, dev_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.dev_file, checkpoint=epoch)
-        test_loss, test_acc, test_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch)
-        #print(test_loss, test_acc)
-        logger.info('【DEV】Train Epoch %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, dev_loss, dev_acc, dev_f1))
-        logger.info('【TEST】Train Epoch %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (epoch, test_loss, test_acc, test_f1))
+            if step % args.saving_steps == 0:
+                logger.debug("loss:"+str(np.array(epoch_loss).mean()))
+                logger.debug('learning_rate:' + str(optimizer.state_dict()['param_groups'][0]['lr']))
+                dev_loss, dev_acc, dev_f1 = test(model=model, tokenizer=tokenizer, test_file=args.dev_file, checkpoint=epoch)
+                test_loss, test_acc, test_f1 = test(model=model, tokenizer=tokenizer, test_file=args.test_file, checkpoint=epoch)
+                if dev_acc >= max_dev_acc or dev_f1 >= max_dev_f1 or test_acc >= max_test_acc or test_f1 >= max_test_f1:
+                    max_dev_acc = max(max_dev_acc, dev_acc)
+                    max_dev_f1 = max(max_dev_f1, dev_f1)
+                    max_test_acc = max(test_acc, max_test_acc)
+                    max_test_f1 = max(test_f1, max_test_f1)
+                # 保存模型
+                logger.info(
+                    '【DEV】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (
+                        epoch, step, dev_loss, dev_acc, dev_f1))
+                logger.info(
+                    '【TEST】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (
+                        epoch, step, test_loss, test_acc, test_f1))
+                output_dir = args.save_dir + "/checkpoint-" + str(epoch) + '-' + str(step)
+                if not os.path.exists(output_dir):
+                    os.makedirs(output_dir)
+                model_to_save = (model.module if hasattr(model, "module") else model)
+                model_to_save.save_pretrained(output_dir)
+                tokenizer.save_pretrained(output_dir)
+                torch.save(args, os.path.join(output_dir, "training_args.bin"))
+                logger.debug("Saving model checkpoint to %s", output_dir)
+                if args.fp16:
+                    torch.save(amp.state_dict(), os.path.join(output_dir, "amp.pt"))
+                torch.save(optimizer.state_dict(), os.path.join(output_dir, "optimizer.pt"))
+                torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
+                logger.debug("Saving optimizer and scheduler states to %s", output_dir)
+    logger.info('【BEST TEST ACC】: %.4f,   【BEST TEST F1】: %.4f' % (max_test_acc, max_test_f1))
+    logger.info('【BEST DEV ACC】: %.4f,   【BEST DEV F1】: %.4f' % (max_dev_acc, max_dev_f1))
 
 
 def test(model, tokenizer, test_file, checkpoint, output_dir=None):

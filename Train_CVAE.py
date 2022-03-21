@@ -197,9 +197,11 @@ def train(model, tokenizer, checkpoint, round):
         logger.info(
             '【TEST】Train Epoch %d, round %d: train_loss=%.4f, acc=%.4f, f1=%.4f' % (
             epoch, round, test_loss, test_acc, test_f1))
-        if test_acc > max_test_acc or test_f1 > max_test_f1:
+        if test_acc >= max_test_acc or test_f1 >= max_test_f1 or dev_acc >= max_dev_acc or dev_f1 >= max_dev_f1:
             max_test_acc = max(test_acc, max_test_acc)
             max_test_f1 = max(test_f1, max_test_f1)
+            max_dev_acc = max(dev_acc, max_dev_acc)
+            max_dev_f1 = max(dev_f1, max_dev_f1)
     logger.info('【BEST TEST ACC】: %.4f,   【BEST TEST F1】: %.4f' % (max_test_acc, max_test_f1))
     logger.info('【BEST DEV ACC】: %.4f,   【BEST DEV F1】: %.4f' % (max_dev_acc, max_dev_f1))
 
