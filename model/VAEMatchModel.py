@@ -191,7 +191,7 @@ class VaeBertMatchModel(BertPreTrainedModel):
         else:
             return logits
 
-# VAE MatchModel
+# VAE MatchModel clean_ without kld
 class VaeBertMatchModelClean(BertPreTrainedModel):
     def __init__(self, config):
         super(VaeBertMatchModel, self).__init__(config)
@@ -263,7 +263,7 @@ class VaeBertMatchModelClean(BertPreTrainedModel):
             recons_loss = self.reconstruction_loss_func(recons_x, last_hidden_state)
             #KLD_loss = -0.5 * torch.sum(1 + logvar - mean.pow(2) - logvar.exp())
             #loss_cvae_task = args.task_weight * task_loss + (1 - args.task_weight) * (recons_loss + KLD_loss)
-            loss_cvae_task = args.task_weight * task_loss + (1 - args.task_weight) * (recons_loss + KLD_loss)
+            loss_cvae_task = args.task_weight * task_loss + (1 - args.task_weight) * (recons_loss)
 
             if masked_lm_loss is None:
                 loss = loss_cvae_task
