@@ -194,7 +194,7 @@ class VaeBertMatchModel(BertPreTrainedModel):
 # VAE MatchModel clean_ without kld
 class VaeBertMatchModelClean(BertPreTrainedModel):
     def __init__(self, config):
-        super(VaeBertMatchModel, self).__init__(config)
+        super(VaeBertMatchModelClean, self).__init__(config)
         self.bert = BertModel(config)
         # cvae返回(latent_z, output) output就是重构的x:[batch,seq,768]
         # lantent_z = [batch, seq*hidden]
