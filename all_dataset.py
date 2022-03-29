@@ -31,7 +31,7 @@ class TrainData(Dataset):
         input_ids  = np.array(tokenzied_dict['input_ids'])
         attention_mask = np.array(tokenzied_dict['attention_mask'])
         
-        if 'roberta' in model_type:
+        if 'roberta' in self.model_type:
             return input_ids, attention_mask, np.array([label]), query1, query2
         else:
             token_type_ids = np.array(tokenzied_dict['token_type_ids'])
@@ -48,6 +48,7 @@ class Multi_task_dataset(Dataset):
         self.datas = readDataFromFile(data_file)
         self.max_length = max_length
         self.tokenizer = tokenizer
+        self.model_type=model_type
         self.qtype_dict = {'事物': 0, '人物': 1, '做法': 2, '选择': 3, '时间': 4, '地点': 5, '原因': 6, '其他': 7, '未知': 8}
     def __getitem__(self, item):
         data = self.datas[item]
@@ -64,7 +65,7 @@ class Multi_task_dataset(Dataset):
         input_ids  = np.array(tokenzied_dict['input_ids'])
         attention_mask = np.array(tokenzied_dict['attention_mask'])
         
-        if 'roberta' in model_type:
+        if 'roberta' in self.model_type:
             return input_ids, attention_mask, np.array([label_main]), np.array([label_vice1]), np.array([label_vice2])
         else:
             token_type_ids = np.array(tokenzied_dict['token_type_ids'])
