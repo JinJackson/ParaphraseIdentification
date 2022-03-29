@@ -132,10 +132,10 @@ class VaeBertMatchModel(BertPreTrainedModel):
         self.reconstruction_loss_func = nn.MSELoss()
         self.task_loss_func = nn.BCEWithLogitsLoss()
 
-    def forward(self, input_ids, token_type_ids=None, attention_mask, query1, query2, mask_rate=None, labels=None, model_type='bert'):
+    def forward(self, input_ids, attention_mask, query1, query2, token_type_ids=None, mask_rate=None, labels=None, model_type='bert'):
         if 'roberta' in model_type:
             outputs = self.bert(input_ids=input_ids,
-                            attention_mask=attention_mask)
+                                attention_mask=attention_mask)
         else:
             outputs = self.bert(input_ids=input_ids,
                                 token_type_ids=token_type_ids,
@@ -217,7 +217,7 @@ class VaeBertMatchModelClean(BertPreTrainedModel):
         self.reconstruction_loss_func = nn.MSELoss()
         self.task_loss_func = nn.BCEWithLogitsLoss()
 
-    def forward(self, input_ids, token_type_ids=None, attention_mask, query1, query2, mask_rate=None, labels=None, model_type='bert'):
+    def forward(self, input_ids,  attention_mask, query1, query2, token_type_ids=None, mask_rate=None, labels=None, model_type='bert'):
 
         if 'roberta' in model_type:
             outputs = self.bert(input_ids=input_ids,
@@ -307,7 +307,7 @@ class VaeMultiTaskMatchModel(BertPreTrainedModel):
         self.task_loss_func = nn.BCEWithLogitsLoss()
         self.vice_loss_func = nn.CrossEntropyLoss()
 
-    def forward(self, input_ids, token_type_ids=None, attention_mask, labels_main=None, labels_vice1=None, labels_vice2=None, model_type='bert'):
+    def forward(self, input_ids, attention_mask, token_type_ids=None, labels_main=None, labels_vice1=None, labels_vice2=None, model_type='bert'):
         if 'roberta' in model_type:
             outputs = self.bert(input_ids=input_ids,
                             attention_mask=attention_mask)
@@ -374,7 +374,7 @@ class VaeMultiTaskMatchModelClean(BertPreTrainedModel):
         self.task_loss_func = nn.BCEWithLogitsLoss()
         self.vice_loss_func = nn.CrossEntropyLoss()
 
-    def forward(self, input_ids, token_type_ids=None, attention_mask, labels_main=None, labels_vice1=None, labels_vice2=None, model_type='bert'):
+    def forward(self, input_ids, attention_mask, token_type_ids=None, labels_main=None, labels_vice1=None, labels_vice2=None, model_type='bert'):
         if 'roberta' in model_type:
             outputs = self.bert(input_ids=input_ids,
                             attention_mask=attention_mask)
