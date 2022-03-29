@@ -277,7 +277,7 @@ class VaeBertMatchModelClean(BertPreTrainedModel):
 
 class VaeRobertaMatchModelClean(BertPreTrainedModel):
     def __init__(self, config):
-        super(VaeBertMatchModelClean, self).__init__(config)
+        super(VaeRobertaMatchModelClean, self).__init__(config)
         self.bert = RobertaModel(config)
         # cvae返回(latent_z, output) output就是重构的x:[batch,seq,768]
         # lantent_z = [batch, seq*hidden]
@@ -425,7 +425,7 @@ class VaeMultiTaskMatchModel(BertPreTrainedModel):
 
 class VaeMultiTaskMatchModelClean(BertPreTrainedModel):
     def __init__(self, config):
-        super(VaeMultiTaskMatchModel, self).__init__(config)
+        super(VaeMultiTaskMatchModelClean, self).__init__(config)
         self.bert = BertModel(config)
         # cvae返回(latent_z, output) output就是重构的x:[batch,seq,768]
         # lantent_z = [batch, seq*hidden]
@@ -488,7 +488,7 @@ class VaeMultiTaskMatchModelClean(BertPreTrainedModel):
 
 class VaeMultiTaskMatchRobertaModelClean(BertPreTrainedModel):
     def __init__(self, config):
-        super(VaeMultiTaskMatchModel, self).__init__(config)
+        super(VaeMultiTaskMatchRobertaModelClean, self).__init__(config)
         self.bert = RobertaModel(config)
         # cvae返回(latent_z, output) output就是重构的x:[batch,seq,768]
         # lantent_z = [batch, seq*hidden]
