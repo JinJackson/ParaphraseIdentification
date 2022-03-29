@@ -278,7 +278,7 @@ class VaeBertMatchModelClean(BertPreTrainedModel):
 class VaeRobertaMatchModelClean(BertPreTrainedModel):
     def __init__(self, config):
         super(VaeRobertaMatchModelClean, self).__init__(config)
-        self.bert = RobertaModel(config)
+        self.roberta = RobertaModel(config)
         # cvae返回(latent_z, output) output就是重构的x:[batch,seq,768]
         # lantent_z = [batch, seq*hidden]
         self.input_size = config.hidden_size
@@ -289,7 +289,6 @@ class VaeRobertaMatchModelClean(BertPreTrainedModel):
                                    num_layers=self.num_layers,
                                    dropout=self.dropout,
                                    decoder_type=self.decoder_type)
-        self.cls = BertOnlyMLMHead(config)
         # 加一个FFN
         # self.linear1 = nn.Linear(seq_len*hidden_size, seq_len*hidden_size*2)
         # self.linear2 = nn.Linear(seq_len*hidden_size*2, seq_len*hidden_size)
@@ -301,8 +300,8 @@ class VaeRobertaMatchModelClean(BertPreTrainedModel):
         if not ('roberta' in model_type):
             return None
 
-        outputs = self.bert(input_ids=input_ids,
-                            attention_mask=attention_mask)
+        outputs = self.roberta(input_ids=input_ids,
+                                attention_mask=attention_mask)
 
 
         last_hidden_state = outputs[0]
@@ -489,7 +488,7 @@ class VaeMultiTaskMatchModelClean(BertPreTrainedModel):
 class VaeMultiTaskMatchRobertaModelClean(BertPreTrainedModel):
     def __init__(self, config):
         super(VaeMultiTaskMatchRobertaModelClean, self).__init__(config)
-        self.bert = RobertaModel(config)
+        self.roberta = RobertaModel(config)
         # cvae返回(latent_z, output) output就是重构的x:[batch,seq,768]
         # lantent_z = [batch, seq*hidden]
         self.input_size = config.hidden_size
@@ -514,8 +513,8 @@ class VaeMultiTaskMatchRobertaModelClean(BertPreTrainedModel):
 
         if not ('roberta' in model_type):
             return None
-        outputs = self.bert(input_ids=input_ids,
-                            attention_mask=attention_mask)
+        outputs = self.roberta(input_ids=input_ids,
+                                attention_mask=attention_mask)
 
 
         last_hidden_state = outputs[0]
