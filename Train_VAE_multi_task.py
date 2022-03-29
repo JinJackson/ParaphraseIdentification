@@ -101,13 +101,23 @@ def train(model, tokenizer, checkpoint, round):
             # 设置tensor gpu运行
             batch = tuple(t.to(args.device) for t in batch)
 
-            input_ids, token_type_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
-            outputs = model(input_ids=input_ids.long(),
-                            token_type_ids=token_type_ids.long(),
-                            attention_mask=attention_mask.long(),
-                            labels_main=labels_main,
-                            labels_vice1=labels_vice1,
-                            labels_vice2=labels_vice2)
+            
+            if 'roberta' in args.model_type:
+                input_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
+                outputs = model(input_ids=input_ids.long(),
+                                attention_mask=attention_mask.long(),
+                                labels_main=labels_main,
+                                labels_vice1=labels_vice1,
+                                labels_vice2=labels_vice2,
+                                mdoel_type='roberta')
+            else:
+                input_ids, token_type_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
+                outputs = model(input_ids=input_ids.long(),
+                                token_type_ids=token_type_ids.long(),
+                                attention_mask=attention_mask.long(),
+                                labels_main=labels_main,
+                                labels_vice1=labels_vice1,
+                                labels_vice2=labels_vice2)
 
             loss = outputs[0]
 
@@ -212,13 +222,23 @@ def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
 
             batch = [t.to(args.device) for t in batch]
 
-            input_ids, token_type_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
-            outputs = model(input_ids=input_ids.long(),
-                            token_type_ids=token_type_ids.long(),
-                            attention_mask=attention_mask.long(),
-                            labels_main=labels_main,
-                            labels_vice1=labels_vice1,
-                            labels_vice2=labels_vice2)
+            
+            if 'roberta' in args.model_type:
+                input_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
+                outputs = model(input_ids=input_ids.long(),
+                                attention_mask=attention_mask.long(),
+                                labels_main=labels_main,
+                                labels_vice1=labels_vice1,
+                                labels_vice2=labels_vice2,
+                                mdoel_type='roberta')
+            else:
+                input_ids, token_type_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
+                outputs = model(input_ids=input_ids.long(),
+                                token_type_ids=token_type_ids.long(),
+                                attention_mask=attention_mask.long(),
+                                labels_main=labels_main,
+                                labels_vice1=labels_vice1,
+                                labels_vice2=labels_vice2)
 
             eval_loss, logits = outputs[:2]
 
@@ -245,11 +265,8 @@ if __name__ == "__main__":
     logger = getLogger(__name__, os.path.join(args.save_dir, 'log.txt'))
 
     if 'roberta' in args.model_type:
-        MatchModel = RobertaMatchModel
+        MatchModel = VaeMultiTaskMatchModel
         Tokenizer = RobertaTokenizer
-    elif 'albert' in args.model_type:
-        MatchModel = AlbertMatchModel
-        Tokenizer = AlbertTokenizer
     elif 'bert' in args.model_type:
         MatchModel = VaeMultiTaskMatchModel
         Tokenizer = BertTokenizer

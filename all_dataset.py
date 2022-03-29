@@ -30,15 +30,21 @@ class TrainData(Dataset):
                                                     padding='max_length')
         input_ids  = np.array(tokenzied_dict['input_ids'])
         attention_mask = np.array(tokenzied_dict['attention_mask'])
-        token_type_ids = np.array(tokenzied_dict['token_type_ids'])
-        return input_ids, token_type_ids, attention_mask, np.array([label]), query1, query2
+        
+        if 'roberta' in model_type:
+            return input_ids, attention_mask, np.array([label]), query1, query2
+        else:
+            token_type_ids = np.array(tokenzied_dict['token_type_ids'])
+            return input_ids, token_type_ids, attention_mask, np.array([label]), query1, query2
+        
+        
 
     def __len__(self):
         return len(self.datas)
 
 
 class Multi_task_dataset(Dataset):
-    def __init__(self, data_file, max_length, tokenizer):
+    def __init__(self, data_file, max_length, tokenizer, model_type='bert'):
         self.datas = readDataFromFile(data_file)
         self.max_length = max_length
         self.tokenizer = tokenizer
@@ -57,8 +63,14 @@ class Multi_task_dataset(Dataset):
                                                     padding='max_length')
         input_ids  = np.array(tokenzied_dict['input_ids'])
         attention_mask = np.array(tokenzied_dict['attention_mask'])
-        token_type_ids = np.array(tokenzied_dict['token_type_ids'])
-        return input_ids, token_type_ids, attention_mask, np.array([label_main]), np.array([label_vice1]), np.array([label_vice2])
+        
+        if 'roberta' in model_type:
+            return input_ids, attention_mask, np.array([label_main]), np.array([label_vice1]), np.array([label_vice2])
+        else:
+            token_type_ids = np.array(tokenzied_dict['token_type_ids'])
+            return input_ids, token_type_ids, attention_mask, np.array([label_main]), np.array([label_vice1]), np.array([label_vice2])
+
+        
     
     def __len__(self):
         return len(self.datas)

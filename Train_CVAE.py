@@ -111,7 +111,10 @@ def train(model, tokenizer, checkpoint, round):
                 input_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 attention_mask=attention_mask.long(),
-                                labels=labels)
+                                query1=query1,
+                                query2=query2,
+                                labels=labels,
+                                model_type='roberta')
 
             else:
                 input_ids, token_type_ids, attention_mask, labels = batch
@@ -120,7 +123,6 @@ def train(model, tokenizer, checkpoint, round):
                                 attention_mask=attention_mask.long(),
                                 query1=query1,
                                 query2=query2,
-                                mask_rate=args.mask_rate,
                                 labels=labels)
 
             loss = outputs[0]
@@ -235,7 +237,10 @@ def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
                 input_ids, attention_mask, labels = batch
                 outputs = model(input_ids=input_ids.long(),
                                 attention_mask=attention_mask.long(),
-                                labels=labels)
+                                query1=query1,
+                                query2=query2,
+                                labels=labels,
+                                model_type='roberta')
 
             else:
                 input_ids, token_type_ids, attention_mask, labels = batch
@@ -244,7 +249,6 @@ def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
                                 attention_mask=attention_mask.long(),
                                 query1=query1,
                                 query2=query2,
-                                mask_rate=None,
                                 labels=labels)
 
             eval_loss, logits = outputs[:2]
@@ -272,17 +276,11 @@ if __name__ == "__main__":
     logger = getLogger(__name__, os.path.join(args.save_dir, 'log.txt'))
 
     if 'roberta' in args.model_type:
-        MatchModel = RobertaMatchModel
+        MatchModel = VaeBertMatchModel
         Tokenizer = RobertaTokenizer
-    elif 'albert' in args.model_type:
-        MatchModel = AlbertMatchModel
-        Tokenizer = AlbertTokenizer
     elif 'bert' in args.model_type:
         MatchModel = VaeBertMatchModel
         Tokenizer = BertTokenizer
-    elif 'ernie' in args.model_type:
-        MatchModel = VaeBertMatchModel
-        Tokenizer = AutoTokenizer
 
     if args.do_train:
         # train： 接着未训练完checkpoint继续训练
