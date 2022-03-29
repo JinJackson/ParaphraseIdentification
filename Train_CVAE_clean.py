@@ -2,7 +2,7 @@ from parser1 import args
 from torch.utils.data import DataLoader
 from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup, RobertaTokenizer, AlbertTokenizer, AutoTokenizer
 from model.MatchModel import BertMatchModel, RobertaMatchModel, AlbertMatchModel
-from model.VAEMatchModel import VaeBertMatchModelClean
+from model.VAEMatchModel import VaeBertMatchModelClean, VaeRobertaMatchModelClean
 import os, random
 import glob
 import torch
@@ -276,14 +276,12 @@ if __name__ == "__main__":
     logger = getLogger(__name__, os.path.join(args.save_dir, 'log.txt'))
 
     if 'roberta' in args.model_type:
-        MatchModel = VaeBertMatchModelClean
+        MatchModel = VaeRobertaMatchModelClean
         Tokenizer = RobertaTokenizer
     elif 'bert' in args.model_type:
         MatchModel = VaeBertMatchModelClean
         Tokenizer = BertTokenizer
-    elif 'ernie' in args.model_type:
-        MatchModel = VaeBertMatchModelClean
-        Tokenizer = AutoTokenizer
+
 
     if args.do_train:
         # train： 接着未训练完checkpoint继续训练
