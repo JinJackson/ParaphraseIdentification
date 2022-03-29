@@ -114,7 +114,7 @@ def train(model, tokenizer, checkpoint, round):
                                 query1=query1,
                                 query2=query2,
                                 labels=labels,
-                                modle_type='roberta')
+                                model_type='roberta')
 
             else:
                 input_ids, token_type_ids, attention_mask, labels = batch
