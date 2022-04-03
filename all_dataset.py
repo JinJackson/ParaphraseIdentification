@@ -14,7 +14,7 @@ def readDataFromFile(data_file):
 
 
 class TrainData(Dataset):
-    def __init__(self, data_file, max_length, tokenizer, model_type=None):
+    def __init__(self, data_file, max_length, tokenizer, model_type='bert'):
         self.datas = readDataFromFile(data_file)
         self.max_length = max_length
         self.tokenizer = tokenizer
@@ -23,6 +23,9 @@ class TrainData(Dataset):
     def __getitem__(self, item):
         data = self.datas[item]
         query1, query2, label = data[0], data[1], int(data[2])
+        if 'roberta' in self.model_type:
+            query1 = query1.replace('[SEP]', '</s>')
+            query2 = query2.replace('[SEP]', '</s>')
         tokenzied_dict = self.tokenizer.encode_plus(text=query1,
                                                     text_pair=query2,
                                                     max_length=self.max_length,
@@ -78,18 +81,21 @@ class Multi_task_dataset(Dataset):
 
 
 # if __name__ == '__main__':
-#     from transformers import BertTokenizer, BertModel
-#     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-#     model = BertModel.from_pretrained('bert-base-uncased')
-#     train_dataset = TrainData(data_file='../data/MRPC/clean/train_clean.txt', max_length=100, tokenizer=tokenizer)
-#     TrainDataLoader = DataLoader(dataset=train_dataset, batch_size=2, shuffle=True)
+#     from transformers import BertTokenizer, BertModel, RobertaTokenizer, RobertaModel
+#     tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
+#     # model = RobertaModel.from_pretrained('bert-base-uncased')
+#     train_dataset = TrainData(data_file='./data/quora/tagging/train_tag.txt', max_length=100, tokenizer=tokenizer, model_type='roberta')
+#     TrainDataLoader = DataLoader(dataset=train_dataset, batch_size=2, shuffle=False)
 #     for batch in TrainDataLoader:
-#         input_ids, token_type_ids, attention_mask, label = batch
-#         outputs = model(input_ids=input_ids.long(), token_type_ids=token_type_ids.long(), attention_mask=attention_mask.long(), return_dict=True)
-#         print(type(outputs))
-#         res = outputs.pooler_output
-#         res2 = outputs[1]
-#         print(res.shape)
-#         print(res == res2)
+#         input_ids, attention_mask, label, q1, q2 = batch
+#         print(q1, q2)
+#         print(input_ids)
 #         break
+        # outputs = model(input_ids=input_ids.long(), token_type_ids=token_type_ids.long(), attention_mask=attention_mask.long(), return_dict=True)
+        # print(type(outputs))
+        # res = outputs.pooler_output
+        # res2 = outputs[1]
+        # print(res.shape)
+        # print(res == res2)
+        # break
 
