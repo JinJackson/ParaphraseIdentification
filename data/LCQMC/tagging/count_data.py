@@ -1,5 +1,5 @@
-data_file = '/Volumes/FileSystem/Devs/Codes/ParaphraseIdentification/data/LCQMC/tagging/test_tag.txt'
-
+# data_file = '/Volumes/FileSystem/Devs/Codes/ParaphraseIdentification/data/LCQMC/tagging/test_tag.txt'
+data_file = '../../quora/tagging/dev_tag.txt'
 counter = dict()
 with open(data_file, 'r', encoding='utf-8') as reader:
     lines = reader.readlines()
@@ -14,9 +14,9 @@ with open(data_file, 'r', encoding='utf-8') as reader:
 
 print(counter)
 
-count = 0
-for key in counter:
-    if len(key) >5:
-        count += counter[key]
-print(count)
+# count = 0
+# for key in counter:
+#     if len(key) >5:
+#         count += counter[key]
+# print(count)
         

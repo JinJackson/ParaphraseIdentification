@@ -1,5 +1,5 @@
-data_file = './clean/train_clean.txt'
-written_file = './tagging/train_tag.txt'
+data_file = './clean/test_clean.txt'
+written_file = './tagging/test_tag.txt'
 import re
 from collections import OrderedDict
 all_pattern = OrderedDict()
@@ -56,7 +56,7 @@ with open(data_file, 'r', encoding='utf-8') as reader:
         if flag == False:
             count += 1
             if qtype1 == None:
-                qtype1 = 'nomal'
+                qtype1 = 'normal'
             if qtype2 == None:
                 qtype2 = 'normal'
             all_data.append([query1, qtype1, query2, qtype2, label])

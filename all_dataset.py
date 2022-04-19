@@ -51,8 +51,43 @@ class Multi_task_dataset(Dataset):
         self.datas = readDataFromFile(data_file)
         self.max_length = max_length
         self.tokenizer = tokenizer
-        self.model_type=model_type
-        self.qtype_dict = {'事物': 0, '人物': 1, '做法': 2, '选择': 3, '时间': 4, '地点': 5, '原因': 6, '其他': 7, '未知': 8}
+        self.model_type = model_type
+        self.qtype_dict = {'事物': 0, '人物': 1, '做法': 2, '选择': 3, '时间': 4, '地点': 5, '原因': 6, '普通': 7}
+    def __getitem__(self, item):
+        data = self.datas[item]
+        info1, info2, label_main = data[0], data[1], int(data[2])
+        query1, qtype1 = info1.split('[SEP]')
+        query2, qtype2 = info2.split('[SEP]')
+        label_vice1 = self.qtype_dict[qtype1[:2]]
+        label_vice2 = self.qtype_dict[qtype2[:2]]
+        tokenzied_dict = self.tokenizer.encode_plus(text=query1,
+                                                    text_pair=query2,
+                                                    max_length=self.max_length,
+                                                    truncation=True,
+                                                    padding='max_length')
+        input_ids  = np.array(tokenzied_dict['input_ids'])
+        attention_mask = np.array(tokenzied_dict['attention_mask'])
+        
+        if 'roberta' in self.model_type:
+            return input_ids, attention_mask, np.array([label_main]), np.array([label_vice1]), np.array([label_vice2])
+        else:
+            token_type_ids = np.array(tokenzied_dict['token_type_ids'])
+            return input_ids, token_type_ids, attention_mask, np.array([label_main]), np.array([label_vice1]), np.array([label_vice2])
+
+        
+    
+    def __len__(self):
+        return len(self.datas)
+
+
+
+class Multi_task_dataset_eng(Dataset):
+    def __init__(self, data_file, max_length, tokenizer, model_type='bert'):
+        self.datas = readDataFromFile(data_file)
+        self.max_length = max_length
+        self.tokenizer = tokenizer
+        self.model_type = model_type
+        self.qtype_dict = {'thing': 0, 'human': 1, 'approach': 2, 'choice': 3, 'time': 4, 'location': 5, 'reason': 6, 'normal': 7}
     def __getitem__(self, item):
         data = self.datas[item]
         info1, info2, label_main = data[0], data[1], int(data[2])

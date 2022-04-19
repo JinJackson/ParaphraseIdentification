@@ -439,8 +439,8 @@ class VaeMultiTaskMatchModelClean(BertPreTrainedModel):
         # 主任务linear
         self.linear_main = nn.Linear(self.input_size, 1)
         # 辅任务linear
-        self.linear_vice1 = nn.Linear(self.input_size, 9)
-        self.linear_vice2 = nn.Linear(self.input_size, 9)
+        self.linear_vice1 = nn.Linear(self.input_size, 8)
+        self.linear_vice2 = nn.Linear(self.input_size, 8)
 
         self.reconstruction_loss_func = nn.MSELoss()
         self.task_loss_func = nn.BCEWithLogitsLoss()
@@ -502,8 +502,8 @@ class VaeMultiTaskMatchRobertaModelClean(BertPreTrainedModel):
         # 主任务linear
         self.linear_main = nn.Linear(self.input_size, 1)
         # 辅任务linear
-        self.linear_vice1 = nn.Linear(self.input_size, 9)
-        self.linear_vice2 = nn.Linear(self.input_size, 9)
+        self.linear_vice1 = nn.Linear(self.input_size, 8)
+        self.linear_vice2 = nn.Linear(self.input_size, 8)
 
         self.reconstruction_loss_func = nn.MSELoss()
         self.task_loss_func = nn.BCEWithLogitsLoss()
