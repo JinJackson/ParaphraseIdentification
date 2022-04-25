@@ -96,8 +96,8 @@ class Multi_task_dataset_eng(Dataset):
         info1, info2, label_main = data[0], data[1], int(data[2])
         query1, qtype1 = info1.split('[SEP]')
         query2, qtype2 = info2.split('[SEP]')
-        label_vice1 = self.qtype_dict[qtype1[:2]]
-        label_vice2 = self.qtype_dict[qtype2[:2]]
+        label_vice1 = self.qtype_dict[qtype1]
+        label_vice2 = self.qtype_dict[qtype2]
         if 'roberta' in self.model_type:
             query1 = query1.replace('[SEP]', '</s>')
             query2 = query2.replace('[SEP]', '</s>')
