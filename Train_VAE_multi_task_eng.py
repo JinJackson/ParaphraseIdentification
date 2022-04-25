@@ -110,7 +110,7 @@ def train(model, tokenizer, checkpoint, round):
                                 labels_main=labels_main,
                                 labels_vice1=labels_vice1,
                                 labels_vice2=labels_vice2,
-                                mdoel_type='roberta')
+                                model_type='roberta')
             else:
                 input_ids, token_type_ids, attention_mask, labels_main, labels_vice1, labels_vice2 = batch
                 outputs = model(input_ids=input_ids.long(),
