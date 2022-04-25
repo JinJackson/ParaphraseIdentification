@@ -2,7 +2,7 @@ from parser1 import args
 from torch.utils.data import DataLoader
 from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup, RobertaTokenizer, AlbertTokenizer, AutoTokenizer
 from model.MatchModel import BertMatchModel, RobertaMatchModel, AlbertMatchModel
-from model.VAEMatchModel import VaeMultiTaskMatchModelClean
+from model.VAEMatchModel import VaeMultiTaskMatchModelClean, VaeMultiTaskMatchRobertaModelClean
 import os, random
 import glob
 import torch
