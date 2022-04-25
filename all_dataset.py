@@ -47,7 +47,7 @@ class TrainData(Dataset):
 
 
 class Multi_task_dataset(Dataset):
-    def __init__(self, data_file, max_length, tokenizer, model_type='bert'):
+    def __init__(self, data_file, max_length, tokenizer, model_type):
         self.datas = readDataFromFile(data_file)
         self.max_length = max_length
         self.tokenizer = tokenizer
@@ -60,6 +60,9 @@ class Multi_task_dataset(Dataset):
         query2, qtype2 = info2.split('[SEP]')
         label_vice1 = self.qtype_dict[qtype1[:2]]
         label_vice2 = self.qtype_dict[qtype2[:2]]
+        if 'roberta' in self.model_type:
+            query1 = query1.replace('[SEP]', '</s>')
+            query2 = query2.replace('[SEP]', '</s>')
         tokenzied_dict = self.tokenizer.encode_plus(text=query1,
                                                     text_pair=query2,
                                                     max_length=self.max_length,
@@ -82,7 +85,7 @@ class Multi_task_dataset(Dataset):
 
 
 class Multi_task_dataset_eng(Dataset):
-    def __init__(self, data_file, max_length, tokenizer, model_type='bert'):
+    def __init__(self, data_file, max_length, tokenizer, model_type):
         self.datas = readDataFromFile(data_file)
         self.max_length = max_length
         self.tokenizer = tokenizer
@@ -95,6 +98,9 @@ class Multi_task_dataset_eng(Dataset):
         query2, qtype2 = info2.split('[SEP]')
         label_vice1 = self.qtype_dict[qtype1[:2]]
         label_vice2 = self.qtype_dict[qtype2[:2]]
+        if 'roberta' in self.model_type:
+            query1 = query1.replace('[SEP]', '</s>')
+            query2 = query2.replace('[SEP]', '</s>')
         tokenzied_dict = self.tokenizer.encode_plus(text=query1,
                                                     text_pair=query2,
                                                     max_length=self.max_length,

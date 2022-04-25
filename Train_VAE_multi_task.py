@@ -2,7 +2,7 @@ from parser1 import args
 from torch.utils.data import DataLoader
 from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup, RobertaTokenizer, AlbertTokenizer, AutoTokenizer
 from model.MatchModel import BertMatchModel, RobertaMatchModel, AlbertMatchModel
-from model.VAEMatchModel import VaeMultiTaskMatchModel
+from model.VAEMatchModel import VaeMultiTaskMatchModelClean
 import os, random
 import glob
 import torch
@@ -43,7 +43,8 @@ def train(model, tokenizer, checkpoint, round):
 
     train_data = Multi_task_dataset(data_file=args.train_file,
                                     max_length=args.max_length,
-                                    tokenizer=tokenizer)
+                                    tokenizer=tokenizer,
+                                    model_type=args.model_type)
 
     train_dataloader = DataLoader(dataset=train_data,
                                   batch_size=args.batch_size,
@@ -200,7 +201,8 @@ def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
     print(type(model))
     test_data = Multi_task_dataset(data_file=test_file,
                                     max_length=args.max_length,
-                                    tokenizer=tokenizer)
+                                    tokenizer=tokenizer,
+                                    model_type=args.model_type)
 
     test_dataLoader = DataLoader(dataset=test_data,
                                  batch_size=args.batch_size,
@@ -265,10 +267,10 @@ if __name__ == "__main__":
     logger = getLogger(__name__, os.path.join(args.save_dir, 'log.txt'))
 
     if 'roberta' in args.model_type:
-        MatchModel = VaeMultiTaskMatchModel
+        MatchModel = VaeMultiTaskMatchRobertaModelClean
         Tokenizer = RobertaTokenizer
     elif 'bert' in args.model_type:
-        MatchModel = VaeMultiTaskMatchModel
+        MatchModel = VaeMultiTaskMatchModelClean
         Tokenizer = BertTokenizer
     # elif 'ernie' in args.model_type:
     #     MatchModel = VaeBertMatchModel

@@ -43,7 +43,8 @@ def train(model, tokenizer, checkpoint, round):
 
     train_data = Multi_task_dataset_eng(data_file=args.train_file,
                                     max_length=args.max_length,
-                                    tokenizer=tokenizer)
+                                    tokenizer=tokenizer,
+                                    model_type=args.model_type)
 
     train_dataloader = DataLoader(dataset=train_data,
                                   batch_size=args.batch_size,
@@ -200,7 +201,8 @@ def test(model, tokenizer, test_file, checkpoint, round, output_dir=None):
     print(type(model))
     test_data = Multi_task_dataset_eng(data_file=test_file,
                                     max_length=args.max_length,
-                                    tokenizer=tokenizer)
+                                    tokenizer=tokenizer,
+                                    model_type=args.model_type)
 
     test_dataLoader = DataLoader(dataset=test_data,
                                  batch_size=args.batch_size,
@@ -265,7 +267,7 @@ if __name__ == "__main__":
     logger = getLogger(__name__, os.path.join(args.save_dir, 'log.txt'))
 
     if 'roberta' in args.model_type:
-        MatchModel = VaeMultiTaskMatchModelClean
+        MatchModel = VaeMultiTaskMatchRobertaModelClean
         Tokenizer = RobertaTokenizer
     elif 'bert' in args.model_type:
         MatchModel = VaeMultiTaskMatchModelClean
