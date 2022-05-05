@@ -269,7 +269,7 @@ if __name__ == "__main__":
     if 'roberta' in args.model_type:
         MatchModel = VaeMultiTaskMatchRobertaModelClean
         Tokenizer = RobertaTokenizer
-    elif 'bert' in args.model_type:
+    elif 'bert' in args.model_type or 'ernie' in args.model_type:
         MatchModel = VaeMultiTaskMatchModelClean
         Tokenizer = BertTokenizer
     # elif 'ernie' in args.model_type:
