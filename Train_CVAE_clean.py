@@ -278,7 +278,7 @@ if __name__ == "__main__":
     if 'roberta' in args.model_type:
         MatchModel = VaeRobertaMatchModelClean
         Tokenizer = RobertaTokenizer
-    elif 'bert' in args.model_type:
+    elif 'bert' in args.model_type or 'ernie' in args.model_type:
         MatchModel = VaeBertMatchModelClean
         Tokenizer = BertTokenizer
 
